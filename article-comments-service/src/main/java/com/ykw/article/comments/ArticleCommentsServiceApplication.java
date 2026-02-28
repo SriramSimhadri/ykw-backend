@@ -1,4 +1,4 @@
-package com.ykw.article;
+package com.ykw.article.comments;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
