@@ -6,13 +6,15 @@ spring:
     url: jdbc:postgresql://localhost:5432/article_comments_db
     username: postgres
     password: postgres
+    driver-class-name: org.postgresql.Driver
   flyway:
     enabled: true
     locations: classpath:db/migration
     schemas: public
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: validate ## validate the scehma and make no changes to the database
+    database: postgresql
     show-sql: true
 
 logging:
