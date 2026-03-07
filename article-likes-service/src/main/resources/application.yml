@@ -20,3 +20,12 @@ spring:
 logging:
   level:
     org.flywaydb.core: debug
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
