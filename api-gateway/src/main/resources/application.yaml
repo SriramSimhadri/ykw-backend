@@ -13,7 +13,7 @@ gateway:
 
 management:
   endpoints:
-    web:  
+    web:
       exposure:
         include: health,info
   endpoint:
@@ -22,7 +22,12 @@ management:
 
 logging:
   level:
-    org.springframework.cloud.gateway: DEBUG
+    root: INFO
+    org.springframework: WARN
+    org.springframework.cloud.gateway: WARN
+    reactor.netty: WARN
+    io.netty: WARN
+    com.ykw: INFO
 
 spring:
   application:
