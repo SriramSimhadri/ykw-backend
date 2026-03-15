@@ -1,5 +1,6 @@
 package com.ykw.api.gateway.health;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.ykw.api.gateway.config.GatewayHealthProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -9,6 +10,9 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.ykw.common.constants.GatewayConstants.STATUS_UP;
+
 
 /**
  * HealthPoller periodically checks the health of downstream microservices
@@ -73,8 +77,8 @@ public class HealthPoller {
         return webClient.get()
                 .uri(serviceUrl + "/actuator/health")
                 .retrieve()
-                .bodyToMono(String.class)
-                .map(r -> true)
+                .bodyToMono(JsonNode.class)
+                .map(json -> STATUS_UP.equals(json.get("status").asText()))
                 .onErrorReturn(false);
     }
 }

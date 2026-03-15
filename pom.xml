@@ -19,6 +19,7 @@
 
     <modules>
         <module>common-lib</module>
+        <module>api-contracts</module>
         <module>api-gateway</module>
         <module>user-service</module>
         <module>article-service</module>
@@ -67,6 +68,18 @@
                 <groupId>com.ykw</groupId>
                 <artifactId>common-lib</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>2.5.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openapitools</groupId>
+                <artifactId>jackson-databind-nullable</artifactId>
+                <version>0.2.6</version>
             </dependency>
 
         </dependencies>

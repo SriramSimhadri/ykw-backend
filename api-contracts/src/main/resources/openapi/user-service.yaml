@@ -1,0 +1,65 @@
+openapi: 3.0.3
+info:
+  title: YKW User Service
+  version: 1.0.0
+paths:
+  /users/register:
+    post:
+      summary: Register a new user
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
+components:
+  schemas:
+    UserRegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        name:
+          type: string
+        bio:
+          type: string
+        profile_image_url:
+          type: string
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        name:
+          type: string
+        bio:
+          type: string
+        profile_image_url:
+          type: string
+        followers_count:
+          type: integer
+        following_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
