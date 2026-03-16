@@ -10,6 +10,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+import static com.ykw.common.constants.GatewayConstants.X_TRACE_ID;
+
 /**
  * Global gateway filter that logs incoming requests and responses.
  * Adds a traceId to support distributed request tracing.
@@ -29,7 +31,7 @@ public class RequestLoggingFilter implements GlobalFilter, Ordered {
         var request = exchange.getRequest();
 
         // get traceId from header or generate new one
-        String traceId = request.getHeaders().getFirst("X-Trace-Id");
+        String traceId = request.getHeaders().getFirst(X_TRACE_ID);
         if (traceId == null) {
             traceId = UUID.randomUUID().toString();
         }
@@ -47,7 +49,7 @@ public class RequestLoggingFilter implements GlobalFilter, Ordered {
 
         // propagate traceId to downstream services
         var mutatedRequest = request.mutate()
-                .header("X-Trace-Id", traceId)
+                .header(X_TRACE_ID, traceId)
                 .build();
 
         var mutatedExchange = exchange.mutate()

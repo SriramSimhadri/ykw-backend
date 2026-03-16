@@ -36,11 +36,21 @@ spring:
   cloud:
     gateway:
       routes:
-        # USER SERVICE
-        - id: user-service
+        # USER SERVICE API
+        - id: user-service-api
           uri: http://localhost:8091
           predicates:
-            - Path=/users/**
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=2
+
+        # USER SERVICE INTERNAL
+        - id: user-service-internal
+          uri: http://localhost:8091
+          predicates:
+            - Path=/internal/users/**
+          filters:
+            - StripPrefix=2
 
         # ARTICLE SERVICE
         - id: article-service
