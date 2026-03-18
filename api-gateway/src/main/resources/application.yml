@@ -5,7 +5,8 @@ gateway:
   health:
     interval: 5000
     services:
-      user-service: http://localhost:8091
+      auth-service: http://localhost:8090
+      profile-service: http://localhost:8091
       article-service: http://localhost:8092
       likes-service: http://localhost:8093
       comments-service: http://localhost:8094
@@ -36,16 +37,32 @@ spring:
   cloud:
     gateway:
       routes:
-        # USER SERVICE API
-        - id: user-service-api
+        # AUTH SERVICE API
+        - id: auth-service-api
+          uri: http://localhost:8090
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=1
+
+        # AUTH SERVICE INTERNAL
+        - id: auth-service-internal
+          uri: http://localhost:8090
+          predicates:
+            - Path=/internal/auth/**
+          filters:
+            - StripPrefix=2
+
+        # PROFILE SERVICE API
+        - id: profile-service-api
           uri: http://localhost:8091
           predicates:
             - Path=/api/users/**
           filters:
             - StripPrefix=2
 
-        # USER SERVICE INTERNAL
-        - id: user-service-internal
+        # PROFILE SERVICE INTERNAL
+        - id: profile-service-internal
           uri: http://localhost:8091
           predicates:
             - Path=/internal/users/**

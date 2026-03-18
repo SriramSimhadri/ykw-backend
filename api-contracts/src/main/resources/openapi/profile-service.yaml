@@ -1,0 +1,109 @@
+openapi: 3.0.3
+info:
+  title: YKW User Profile Service
+  version: 1.0.0
+  description: API contract for user management in YKW platform
+
+tags:
+  - name: Users
+    description: Operations related to users
+
+paths:
+  /register:
+    post:
+      tags:
+        - Users
+      summary: Register a new user
+      operationId: registerUser
+
+      parameters:
+        - name: X-Trace-Id
+          in: header
+          required: true
+          description: Unique trace identifier used for request tracing across services
+          schema:
+            type: string
+            example: 7f9c2a3e-bb1a-4a77-8c33-2d9d8e9b5f1e
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid request
+        '409':
+          description: Email already exists
+
+components:
+  schemas:
+    UserRegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: strongpassword123
+        name:
+          type: string
+          example: Sriram
+        bio:
+          type: string
+          example: Backend engineer
+        profile_image_url:
+          type: string
+          format: uri
+          example: https://cdn.ykw.com/images/profile1.png
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserResponse'
+
+    UserResponse:
+      type: object
+      required:
+        - id
+        - email
+        - name
+      properties:
+        id:
+          type: long
+        email:
+          type: string
+        name:
+          type: string
+        bio:
+          type: string
+        profile_image_url:
+          type: string
+        followers_count:
+          type: integer
+          example: 0
+        following_count:
+          type: integer
+          example: 0
+        created_at:
+          type: string
+          format: date-time
