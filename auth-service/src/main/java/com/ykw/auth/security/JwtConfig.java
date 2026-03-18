@@ -32,8 +32,6 @@ public class JwtConfig {
 
     @Bean
     public JwtDecoder jwtDecoder(RsaKeyProvider rsaKeyProvider) {
-        return NimbusJwtDecoder.withPublicKey(
-                (RSAPublicKey) rsaKeyProvider.getPublicKey()
-        ).build();
+        return NimbusJwtDecoder.withPublicKey((RSAPublicKey) rsaKeyProvider.getPublicKey()).build();
     }
 }

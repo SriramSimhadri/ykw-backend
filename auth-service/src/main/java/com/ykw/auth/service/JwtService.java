@@ -18,11 +18,14 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private Long expiration;
 
+    @Value("${spring.application.name}")
+    private String serviceName;
+
     public String generateAccessToken(String userId, String email, String role, String status) {
         Instant now = Instant.now();
 
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
-                .issuer("ykw-auth-service")
+                .issuer(serviceName)
                 .claim("email", email)
                 .claim("role", role)
                 .claim("status", status)

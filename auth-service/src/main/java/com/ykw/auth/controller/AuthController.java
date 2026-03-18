@@ -2,6 +2,7 @@ package com.ykw.auth.controller;
 
 import com.ykw.auth.api.AuthApi;
 import com.ykw.auth.dto.AuthResponse;
+import com.ykw.auth.dto.LoginRequest;
 import com.ykw.auth.dto.UserRegisterRequest;
 import com.ykw.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,20 @@ public class AuthController implements AuthApi {
 
     private final UserService authService;
 
+
     @Override
     public ResponseEntity<AuthResponse> registerUser(final String xTraceId,
                                                      final UserRegisterRequest userRegisterRequest) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(authService.registerUser(userRegisterRequest));
+    }
+
+    @Override
+    public ResponseEntity<AuthResponse> loginUser(final String xTraceId,
+                                                     final LoginRequest loginRequest) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(authService.loginUser(loginRequest, xTraceId));
     }
 }

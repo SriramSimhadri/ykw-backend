@@ -28,5 +28,4 @@ public class RsaKeyProvider {
             this.publicKey = RsaKeyConverters.x509().convert(publicKeyStream);
         }
     }
-
 }
