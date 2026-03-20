@@ -1,9 +1,8 @@
-package com.ykw.auth.model;
+package com.ykw.profile.model;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Getter
@@ -12,29 +11,26 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "user_profiles")
+public class Profile {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 150)
     private String name;
 
-    @Column(nullable = false, length = 255, unique = true)
-    private String email;
+    @Column(columnDefinition = "TEXT")
+    private String bio;
 
-    @Column(name = "password_hash", nullable = false, length = 255)
-    private String passwordHash;
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private UserRole role;
+    @Column(name = "followers_count", nullable = false)
+    private Integer followersCount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private UserStatus status;
+    @Column(name = "following_count", nullable = false)
+    private Integer followingCount;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
@@ -47,8 +43,8 @@ public class User {
         OffsetDateTime now = OffsetDateTime.now();
         if (createdAt == null) createdAt = now;
         if (updatedAt == null) updatedAt = now;
-        if (status == null) status = UserStatus.ACTIVE;
-        if (role == null) role = UserRole.USER;
+        if (followersCount == null) followersCount = 0;
+        if (followingCount == null) followingCount = 0;
     }
 
     @PreUpdate

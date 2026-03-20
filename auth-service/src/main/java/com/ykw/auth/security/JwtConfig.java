@@ -21,11 +21,8 @@ public class JwtConfig {
     @Bean
     public JwtEncoder jwtEncoder(RsaKeyProvider rsaKeyProvider) {
 
-        RSAKey rsaKey = new RSAKey.Builder((RSAPublicKey) rsaKeyProvider.getPublicKey())
-                .privateKey((RSAPrivateKey) rsaKeyProvider.getPrivateKey())
-                .build();
-
-        JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(rsaKey));
+        JWKSource<SecurityContext> jwkSource =
+                new ImmutableJWKSet<>(rsaKeyProvider.getJwkSet());
 
         return new NimbusJwtEncoder(jwkSource);
     }

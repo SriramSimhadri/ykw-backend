@@ -38,7 +38,7 @@ public class UserService {
 
         User user = createUser(request);
 
-        String token = jwtService.generateAccessToken(user.getId().toString(),
+        String token = jwtService.generateAccessToken(user.getId(),
                 user.getEmail(),
                 user.getRole().name(),
                 user.getStatus().name());
@@ -71,7 +71,7 @@ public class UserService {
         }
 
         String accessToken = jwtService.generateAccessToken(
-                user.getId().toString(),
+                user.getId(),
                 user.getEmail(),
                 user.getRole().name(),
                 user.getStatus().name()

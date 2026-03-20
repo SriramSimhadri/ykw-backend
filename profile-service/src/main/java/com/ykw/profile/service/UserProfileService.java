@@ -1,64 +1,81 @@
 package com.ykw.profile.service;
 
-import com.ykw.profile.dto.AuthResponse;
-import com.ykw.profile.dto.UserRegisterRequest;
-import com.ykw.profile.mapper.UserMapper;
-import com.ykw.profile.model.User;
+import com.ykw.profile.dto.PagedUserResponse;
+import com.ykw.profile.dto.UpdateUserProfileRequest;
+import com.ykw.profile.dto.UserProfile;
+import com.ykw.profile.error.ResourceNotFoundException;
+import com.ykw.profile.error.UnauthorizedException;
+import com.ykw.profile.mapper.UserProfileMapper;
+import com.ykw.profile.model.Profile;
 import com.ykw.profile.repository.UserProfileRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.Instant;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserProfileService {
 
-    private final UserProfileRepository userProfileRepository;
+    private final UserProfileRepository repository;
 
-    private final JwtService jwtService;
+    private final UserProfileMapper mapper;
 
-    private final UserMapper userMapper;
+    private final CurrentUserProvider currentUserProvider;
 
-    private final PasswordEncoder passwordEncoder;
+    public UserProfile getCurrentUserProfile() {
+        Long userId = currentUserProvider.getUserId();
+
+        Profile entity = repository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
+
+        return mapper.toResponse(entity);
+    }
 
     @Transactional
-    private User createUser(UserRegisterRequest request) {
+    public UserProfile upsertCurrentUserProfile(UpdateUserProfileRequest request) {
+        Long userId = Optional.ofNullable(currentUserProvider.getUserId())
+                .orElseThrow(() -> new UnauthorizedException("User not authenticated"));
 
-        if (userProfileRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email exists");
-        }
+        Profile entity = repository.findById(userId).orElseGet(() -> {
+            Profile profile = new Profile();
+            profile.setId(userId);
+            return profile;
+        });
 
-        User user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .profileImageUrl(request.getProfileImageUrl().toString())
-                .bio(request.getBio())
-                .build();
+        // update fields
 
-        return userProfileRepository.save(user);
+        if (request.getName() != null) entity.setName(request.getName());
+        if (request.getBio() != null) entity.setBio(request.getBio());
+        if (request.getProfileImageUrl() != null) entity.setProfileImageUrl(request.getProfileImageUrl());
+
+        Profile saved = repository.save(entity);
+
+        return mapper.toResponse(saved);
     }
 
-    public AuthResponse registerUser(UserRegisterRequest request) {
-        log.debug("method {}", "registerUser");
-        Instant start = Instant.now();
-        User user = createUser(request);
-        Instant end = Instant.now();
+    public UserProfile getUserById(Long userId) {
+        Profile entity = repository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not found for userId: " + userId));
 
-        log.debug("Duration {}", Duration.between(start, end));
-        String token = jwtService.generateAccessToken(user.getId().toString(), user.getEmail());
-
-        return new AuthResponse()
-                .accessToken(token)
-                .user(userMapper.toResponse(user));
-
+        return mapper.toResponse(entity);
     }
 
 
+    public PagedUserResponse searchUsers(String query, Pageable pageable) {
+       /* Page<UserProfileEntity> page = repository.searchByName(query, pageable);
+
+        return new PagedUserResponse(
+                page.getContent().stream().map(mapper::toDto).toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );*/
+        return null;
+    }
 }

@@ -25,6 +25,7 @@ logging:
   level:
     root: INFO
     org.springframework: WARN
+    org.springframework.security: DEBUG
     org.springframework.cloud.gateway: WARN
     reactor.netty: WARN
     io.netty: WARN
@@ -33,6 +34,12 @@ logging:
 spring:
   application:
     name: api-gateway
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8090/.well-known/jwks.json
 
   cloud:
     gateway:
@@ -58,8 +65,6 @@ spring:
           uri: http://localhost:8091
           predicates:
             - Path=/api/users/**
-          filters:
-            - StripPrefix=2
 
         # PROFILE SERVICE INTERNAL
         - id: profile-service-internal

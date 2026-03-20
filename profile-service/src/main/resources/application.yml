@@ -3,9 +3,14 @@ server:
 
 spring:
   application:
-    name: user-service
+    name: profile-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8090/.well-known/jwks.json
   datasource:
-    url: jdbc:postgresql://localhost:5432/user_db
+    url: jdbc:postgresql://localhost:5432/profile_db
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -25,11 +30,6 @@ logging:
     org.springframework: WARN
     com.ykw: debug
     org.flywaydb.core: debug
-
-jwt:
-  private-key: classpath:keys/private.pem
-  public-key: classpath:keys/public.pem
-  expiration: 900000
 
 management:
   endpoints:

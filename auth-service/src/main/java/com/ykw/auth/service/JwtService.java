@@ -21,7 +21,7 @@ public class JwtService {
     @Value("${spring.application.name}")
     private String serviceName;
 
-    public String generateAccessToken(String userId, String email, String role, String status) {
+    public String generateAccessToken(Long userId, String email, String role, String status) {
         Instant now = Instant.now();
 
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
@@ -29,7 +29,8 @@ public class JwtService {
                 .claim("email", email)
                 .claim("role", role)
                 .claim("status", status)
-                .subject(userId)
+                .claim("userId", userId)
+                .subject(String.valueOf(userId))
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expiration))
                 .build();
