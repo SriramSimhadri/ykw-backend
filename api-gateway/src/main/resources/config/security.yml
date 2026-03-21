@@ -1,0 +1,7 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Gateway will validate JWT using auth-service public keys
+          jwk-set-uri: http://localhost:8090/.well-known/jwks.json

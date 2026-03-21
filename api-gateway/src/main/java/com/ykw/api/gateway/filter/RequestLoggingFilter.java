@@ -25,6 +25,8 @@ public class RequestLoggingFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange,
                              org.springframework.cloud.gateway.filter.GatewayFilterChain chain) {
+        log.debug("Path: {}", exchange.getRequest().getURI() );
+        log.debug("Auth Header: {}", exchange.getRequest().getHeaders().getFirst("Authorization"));
 
         long startTime = System.currentTimeMillis();
 

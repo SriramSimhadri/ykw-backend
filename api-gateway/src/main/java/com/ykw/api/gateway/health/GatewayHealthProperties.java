@@ -1,4 +1,4 @@
-package com.ykw.api.gateway.config;
+package com.ykw.api.gateway.health;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -1,0 +1,32 @@
+resilience4j:
+  circuitbreaker:
+    instances:
+      profileServiceCircuitBreaker:
+        slidingWindowSize: 5 # wait till last 5 requests
+        failureRateThreshold: 50 # half of the requests must fail to open the circuit
+        waitDurationInOpenState: 10s
+
+      authServiceCircuitBreaker:
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+      articleServiceCircuitBreaker:
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+      likesServiceCircuitBreaker:
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+      commentsServiceCircuitBreaker:
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+      followsServiceCircuitBreaker:
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s

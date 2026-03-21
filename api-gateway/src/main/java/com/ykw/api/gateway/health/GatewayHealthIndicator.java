@@ -1,7 +1,6 @@
 package com.ykw.api.gateway.health;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.ykw.api.gateway.config.GatewayHealthProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;

@@ -22,14 +22,16 @@ spring:
 logging:
   level:
     root: INFO
+    com.ykw: DEBUG
+    # enable security debugging (IMPORTANT)
+    org.springframework.security: DEBUG
     org.springframework: WARN
-    com.ykw: debug
-    org.flywaydb.core: INFO
+    org.springframework.web: DEBUG
 
 jwt:
   private-key: classpath:keys/private.pem
   public-key: classpath:keys/public.pem
-  expiration: 900000
+  expiration: 15m
 
 management:
   endpoints:

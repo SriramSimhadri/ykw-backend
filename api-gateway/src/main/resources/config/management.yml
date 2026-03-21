@@ -1,0 +1,19 @@
+gateway:
+  health:
+    interval: 5000  # Every 5 seconds we ping services to check if they are alive
+    services:
+      auth-service: http://localhost:8090
+      profile-service: http://localhost:8091
+      article-service: http://localhost:8092
+      likes-service: http://localhost:8093
+      comments-service: http://localhost:8094
+      follows-service: http://localhost:8095
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info  # expose basic actuator endpoints
+  endpoint:
+    health:
+      show-details: always  # useful for debugging service health

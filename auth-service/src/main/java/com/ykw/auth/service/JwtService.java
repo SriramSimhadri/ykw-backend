@@ -7,6 +7,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.Instant;
 
 @Service
@@ -16,7 +17,7 @@ public class JwtService {
     private final JwtEncoder jwtEncoder;
 
     @Value("${jwt.expiration}")
-    private Long expiration;
+    private Duration expiration;
 
     @Value("${spring.application.name}")
     private String serviceName;
@@ -32,7 +33,7 @@ public class JwtService {
                 .claim("userId", userId)
                 .subject(String.valueOf(userId))
                 .issuedAt(now)
-                .expiresAt(now.plusSeconds(expiration))
+                .expiresAt(now.plus(expiration))
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();

@@ -9,7 +9,7 @@ tags:
     description: Authentication and identity operations
 
 paths:
-  /auth/register:
+  /api/auth/register:
     post:
       tags:
         - auth
@@ -41,7 +41,7 @@ paths:
         '409':
           description: Email already exists
 
-  /auth/login:
+  /api/auth/login:
     post:
       tags:
         - auth
@@ -71,7 +71,7 @@ paths:
         '401':
           description: Invalid credentials
 
-  /auth/refresh:
+  /api/auth/refresh:
     post:
       tags:
         - auth
