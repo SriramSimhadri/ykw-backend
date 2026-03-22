@@ -16,15 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController implements AuthApi {
 
-    private final UserService authService;
-
+    private final UserService userService;
 
     @Override
     public ResponseEntity<AuthResponse> registerUser(final String xTraceId,
                                                      final UserRegisterRequest userRegisterRequest) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(authService.registerUser(userRegisterRequest));
+                .body(userService.registerUser(userRegisterRequest));
     }
 
     @Override
@@ -32,6 +31,12 @@ public class AuthController implements AuthApi {
                                                      final LoginRequest loginRequest) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(authService.loginUser(loginRequest, xTraceId));
+                .body(userService.loginUser(loginRequest, xTraceId));
+    }
+
+    @Override
+    public ResponseEntity<Void> logoutUser(String xTraceId) {
+        userService.logout();
+        return ResponseEntity.noContent().build();
     }
 }

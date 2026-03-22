@@ -6,7 +6,7 @@ import com.ykw.auth.dto.UserStatus;
 import com.ykw.auth.model.User;
 import org.mapstruct.Mapper;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -29,17 +29,10 @@ public interface UserMapper {
         return UserStatus.fromValue(status.name());
     }
 
-    default OffsetDateTime map(LocalDateTime localDateTime) {
+    default OffsetDateTime map(Instant localDateTime) {
         if (localDateTime == null) {
             return null;
         }
-        return localDateTime.atOffset(ZoneOffset.UTC);
-    }
-
-    default LocalDateTime map(OffsetDateTime offsetDateTime) {
-        if (offsetDateTime == null) {
-            return null;
-        }
-        return offsetDateTime.toLocalDateTime();
+        return OffsetDateTime.ofInstant(localDateTime, ZoneOffset.UTC);
     }
 }

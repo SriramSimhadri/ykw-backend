@@ -3,8 +3,7 @@ package com.ykw.auth.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -37,14 +36,14 @@ public class User {
     private UserStatus status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private OffsetDateTime updatedAt;
+    private Instant updatedAt;
 
     @PrePersist
     public void prePersist() {
-        OffsetDateTime now = OffsetDateTime.now();
+        Instant now = Instant.now();
         if (createdAt == null) createdAt = now;
         if (updatedAt == null) updatedAt = now;
         if (status == null) status = UserStatus.ACTIVE;
@@ -53,6 +52,6 @@ public class User {
 
     @PreUpdate
     public void preUpdate() {
-        updatedAt = OffsetDateTime.now();
+        updatedAt = Instant.now();
     }
 }

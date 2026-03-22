@@ -13,7 +13,6 @@
 
     <artifactId>common-lib</artifactId>
     <name>common-lib</name>
-    <version>0.0.1-SNAPSHOT</version>
     <description>Common Lib</description>
     <packaging>jar</packaging>
 </project>

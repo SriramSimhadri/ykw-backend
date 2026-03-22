@@ -1,5 +1,8 @@
 package com.ykw.auth.security;
 
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +12,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.security.interfaces.RSAPublicKey;
 
 @Slf4j
 @Configuration
@@ -33,5 +42,16 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JwtEncoder jwtEncoder(RsaKeyProvider rsaKeyProvider) {
+        JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(rsaKeyProvider.getJwkSet());
+        return new NimbusJwtEncoder(jwkSource);
+    }
+
+    @Bean
+    public JwtDecoder jwtDecoder(RsaKeyProvider rsaKeyProvider) {
+        return NimbusJwtDecoder.withPublicKey((RSAPublicKey) rsaKeyProvider.getPublicKey()).build();
     }
 }

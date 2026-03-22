@@ -126,12 +126,18 @@
             <artifactId>lombok-mapstruct-binding</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -162,6 +168,7 @@
                                 <interfaceOnly>true</interfaceOnly>
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <useTags>true</useTags>
+                                <useSpringController>true</useSpringController>
                             </configOptions>
                         </configuration>
                     </execution>

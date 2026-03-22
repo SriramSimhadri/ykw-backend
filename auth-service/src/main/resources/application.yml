@@ -18,6 +18,16 @@ spring:
       ddl-auto: validate
     database: postgresql
     show-sql: true
+  data:
+    redis:
+      host: localhost # later => redis.prod.internal
+      port: 6379
+      timeout: 2000 # Fails fast
+      lettuce: # redis client for the spring boot, non-blocking, scalable
+        pool:
+          max-active: 10
+          max-idle: 5
+          min-idle: 1
 
 logging:
   level:

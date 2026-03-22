@@ -3,6 +3,7 @@ package com.ykw.profile.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 
 @Getter
@@ -33,14 +34,14 @@ public class Profile {
     private Integer followingCount;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private OffsetDateTime updatedAt;
+    private Instant updatedAt;
 
     @PrePersist
     public void prePersist() {
-        OffsetDateTime now = OffsetDateTime.now();
+        Instant now = Instant.now();
         if (createdAt == null) createdAt = now;
         if (updatedAt == null) updatedAt = now;
         if (followersCount == null) followersCount = 0;
@@ -49,6 +50,6 @@ public class Profile {
 
     @PreUpdate
     public void preUpdate() {
-        updatedAt = OffsetDateTime.now();
+        updatedAt = Instant.now();
     }
 }
