@@ -1,10 +1,13 @@
 logging:
   level:
-    org.springframework.cloud.gateway.filter.factory.RetryGatewayFilterFactory: DEBUG
+    org.springframework.cloud.gateway.filter.factory.RetryGatewayFilterFactory: WARN
     root: INFO
     org.springframework: WARN
-    org.springframework.security: DEBUG
+    org.springframework.security: WARN
     org.springframework.cloud.gateway: WARN
     reactor.netty: WARN
     io.netty: WARN
     com.ykw: INFO
+
+
+

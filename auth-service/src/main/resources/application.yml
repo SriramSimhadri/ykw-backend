@@ -32,11 +32,11 @@ spring:
 logging:
   level:
     root: INFO
-    com.ykw: DEBUG
+    com.ykw: INFO
     # enable security debugging (IMPORTANT)
-    org.springframework.security: DEBUG
+    org.springframework.security: WARN
     org.springframework: WARN
-    org.springframework.web: DEBUG
+    org.springframework.web: WARN
 
 jwt:
   private-key: classpath:keys/private.pem

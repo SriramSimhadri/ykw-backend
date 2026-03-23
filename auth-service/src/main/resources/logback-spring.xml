@@ -1,45 +1,31 @@
 <configuration>
-    <springProperty scope="context"
-                    name="serviceName"
-                    source="spring.application.name"/>
 
-    <!-- Log format -->
-    <property name="LOG_PATTERN"
-              value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} service=%property{serviceName} traceId=%X{traceId} - %msg%n"/>
-    <!-- Console logging -->
-    <appender name="CONSOLE"
-              class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"service":"ykw-auth-service"}</customFields>
         </encoder>
     </appender>
 
-    <!-- File logging -->
-    <appender name="FILE"
-              class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/auth-service.log</file>
-        <rollingPolicy
-                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/auth-service.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/ykw-auth-service.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/ykw-auth-service.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
         </rollingPolicy>
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
+
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"service":"ykw-auth-service"}</customFields>
         </encoder>
     </appender>
 
-    <!-- Syslog logging -->
-    <appender name="SYSLOG"
-              class="ch.qos.logback.classic.net.SyslogAppender">
-        <syslogHost>localhost</syslogHost>
-        <facility>USER</facility>
-        <suffixPattern>${LOG_PATTERN}</suffixPattern>
-    </appender>
+    <logger name="YKW_APP_LOGGER" level="INFO"/>
 
-    <!-- Root logger -->
+    <logger name="com.ykw" level="DEBUG"/>
+
     <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="JSON"/>
         <appender-ref ref="FILE"/>
-        <appender-ref ref="SYSLOG"/>
     </root>
+
 </configuration>

@@ -17,6 +17,6 @@ public class TokenBlacklistService {
 
         String hashedKey = HashUtil.hash(jti);
 
-        return redisTemplate.hasKey(RedisKeys.blacklistTokenKey(hashedKey));
+        return redisTemplate.hasKey(RedisKeys.blacklistKey(hashedKey));
     }
 }
