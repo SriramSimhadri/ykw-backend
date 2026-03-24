@@ -1,0 +1,23 @@
+spring:
+  data:
+    redis:
+      host: redis
+      port: 6379
+
+gateway:
+  health:
+    interval: 5000
+    services:
+      auth-service: http://auth-service:8090
+      profile-service: http://profile-service:8091
+      article-service: http://article-service:8092
+      likes-service: http://likes-service:8093
+      comments-service: http://comments-service:8094
+      follows-service: http://follows-service:8095
+
+AUTH_SERVICE_URL: http://auth-service:8090
+PROFILE_SERVICE_URL: http://profile-service:8091
+ARTICLE_SERVICE_URL: http://article-service:8092
+LIKES_SERVICE_URL: http://likes-service:8093
+COMMENTS_SERVICE_URL: http://comments-service:8094
+FOLLOWS_SERVICE_URL: http://follows-service:8095

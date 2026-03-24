@@ -20,7 +20,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CustomJwtAuthenticationConverter implements Converter<Jwt, Mono<AbstractAuthenticationToken>> {
+public class CustomJwtAuthConverter implements Converter<Jwt, Mono<AbstractAuthenticationToken>> {
 
     private final TokenBlacklistService blacklistService;
 

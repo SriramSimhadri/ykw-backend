@@ -4,4 +4,4 @@ spring:
       resourceserver:
         jwt:
           # Gateway will validate JWT using auth-service public keys
-          jwk-set-uri: http://localhost:8090/.well-known/jwks.json
+          jwk-set-uri: ${AUTH_SERVICE_URL}/.well-known/jwks.json

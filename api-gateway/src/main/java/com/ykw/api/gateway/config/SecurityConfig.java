@@ -12,7 +12,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, CustomJwtAuthenticationConverter converter) {
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, CustomJwtAuthConverter converter) {
 
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)

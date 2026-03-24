@@ -7,7 +7,7 @@ spring:
       routes:
         # ---------------- AUTH SERVICE ----------------
         - id: auth-service-api
-          uri: http://localhost:8090
+          uri: ${AUTH_SERVICE_URL}
           predicates:
             - Path=/api/auth/**
           filters:
@@ -27,7 +27,7 @@ spring:
                 fallbackUri: forward:/fallback/auth
 
         - id: auth-service-internal
-          uri: http://localhost:8090
+          uri: ${AUTH_SERVICE_URL}
           predicates:
             - Path=/internal/auth/**
           filters:
@@ -35,7 +35,7 @@ spring:
 
         # ---------------- PROFILE SERVICE ----------------
         - id: profile-service-api
-          uri: http://localhost:8091
+          uri: ${PROFILE_SERVICE_URL}
           predicates:
             - Path=/api/users/**
           filters:
@@ -57,7 +57,7 @@ spring:
                 fallbackUri: forward:/fallback/profile  # fallback handled inside gateway
 
         - id: profile-service-internal
-          uri: http://localhost:8091
+          uri: ${PROFILE_SERVICE_URL}
           predicates:
             - Path=/internal/users/**
           filters:
@@ -65,7 +65,7 @@ spring:
 
         # ---------------- ARTICLE SERVICE ----------------
         - id: article-service
-          uri: http://localhost:8092
+          uri: ${ARTICLE_SERVICE_URL}
           predicates:
             - Path=/api/articles/**
           filters:
@@ -81,7 +81,7 @@ spring:
 
         # ---------------- LIKES SERVICE ----------------
         - id: article-likes-service
-          uri: http://localhost:8093
+          uri: ${LIKES_SERVICE_URL}
           predicates:
             - Path=/api/likes/**
           filters:
@@ -97,7 +97,7 @@ spring:
 
         # ---------------- COMMENTS SERVICE ----------------
         - id: article-comments-service
-          uri: http://localhost:8094
+          uri: ${COMMENTS_SERVICE_URL}
           predicates:
             - Path=/api/comments/**
           filters:
@@ -113,7 +113,7 @@ spring:
 
         # ---------------- FOLLOWS SERVICE ----------------
         - id: follows-service
-          uri: http://localhost:8095
+          uri: ${FOLLOWS_SERVICE_URL}
           predicates:
             - Path=/api/follows/**
           filters:

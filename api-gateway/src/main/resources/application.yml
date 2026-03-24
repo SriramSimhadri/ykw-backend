@@ -1,18 +1,18 @@
-server:
-  port: 8081  # Gateway runs on 8081 (entry point for all client requests)
-
 spring:
   application:
     name: api-gateway
-  data:
-    redis:
-      host: localhost
-      port: 6379
+
+  profiles:
+    active: dev   # default
 
   config:
     import:
-      - classpath:config/routes.yml
-      - classpath:config/security.yml
-      - classpath:config/resilience.yml
-      - classpath:config/logging.yml
-      - classpath:config/management.yml
+      - classpath:config/base/routes.yml
+      - classpath:config/base/resilience.yml
+      - classpath:config/base/security.yml
+      - classpath:config/base/logging.yml
+      - classpath:config/base/management.yml
+      - classpath:config/${spring.profiles.active}/infrastructure.yml
+
+server:
+  port: ${SERVER_PORT:8081}

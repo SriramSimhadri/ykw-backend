@@ -1,41 +1,18 @@
-server:
-  port: 8091
-
 spring:
   application:
     name: profile-service
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: http://localhost:8090/.well-known/jwks.json
-  datasource:
-    url: jdbc:postgresql://localhost:5432/profile_db
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-    schemas: public
-  jpa:
-    hibernate:
-      ddl-auto: validate ## validate the schema and make no changes to the database
-    database: postgresql
-    show-sql: true
 
-logging:
-  level:
-    root: INFO
-    org.springframework: WARN
-    com.ykw: debug
-    org.flywaydb.core: debug
+  profiles:
+    active: dev
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: always
+  config:
+    import:
+      - classpath:config/base/data.yml
+      - classpath:config/base/security.yml
+      - classpath:config/base/logging.yml
+      - classpath:config/base/management.yml
+
+      - classpath:config/${spring.profiles.active}/infrastructure.yml
+
+server:
+  port: ${SERVER_PORT:8091}

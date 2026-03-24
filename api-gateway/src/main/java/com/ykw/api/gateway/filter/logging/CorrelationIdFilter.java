@@ -1,4 +1,4 @@
-package com.ykw.api.gateway.filter;
+package com.ykw.api.gateway.filter.logging;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;

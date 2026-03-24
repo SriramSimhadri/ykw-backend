@@ -1,53 +1,18 @@
-server:
-  port: 8090
-
 spring:
   application:
-    name: auth-service
-  datasource:
-    url: jdbc:postgresql://localhost:5432/user_db
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-    schemas: public
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    database: postgresql
-    show-sql: true
-  data:
-    redis:
-      host: localhost # later => redis.prod.internal
-      port: 6379
-      timeout: 2000 # Fails fast
-      lettuce: # redis client for the spring boot, non-blocking, scalable
-        pool:
-          max-active: 10
-          max-idle: 5
-          min-idle: 1
+    name: profile-service
 
-logging:
-  level:
-    root: INFO
-    com.ykw: INFO
-    # enable security debugging (IMPORTANT)
-    org.springframework.security: WARN
-    org.springframework: WARN
-    org.springframework.web: WARN
+  profiles:
+    active: dev
 
-jwt:
-  private-key: classpath:keys/private.pem
-  public-key: classpath:keys/public.pem
-  expiration: 15m
+  config:
+    import:
+      - classpath:config/base/data.yml
+      - classpath:config/base/security.yml
+      - classpath:config/base/logging.yml
+      - classpath:config/base/management.yml
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: always
+      - classpath:config/${spring.profiles.active}/infrastructure.yml
+
+server:
+  port: ${SERVER_PORT:8091}

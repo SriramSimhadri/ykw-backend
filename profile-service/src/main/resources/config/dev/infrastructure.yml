@@ -1,0 +1,8 @@
+DB_URL: jdbc:postgresql://localhost:5432/profile_db
+DB_USER: postgres
+DB_PASSWORD: postgres
+
+REDIS_HOST: localhost
+REDIS_PORT: 6379
+
+AUTH_SERVICE_URL: http://localhost:8090
