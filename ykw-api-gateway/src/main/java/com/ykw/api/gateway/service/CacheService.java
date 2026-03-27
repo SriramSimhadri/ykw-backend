@@ -9,14 +9,16 @@ import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
-public class TokenBlacklistService {
+public class CacheService {
 
     private final ReactiveStringRedisTemplate redisTemplate;
 
-    public Mono<Boolean> isBlacklisted(String jti) {
-
+    public Mono<Boolean> isTokenRevoked(String jti) {
         String hashedKey = HashUtil.hash(jti);
+        return redisTemplate.hasKey(RedisKeys.authTokenBlackListKey(hashedKey));
+    }
 
-        return redisTemplate.hasKey(RedisKeys.blacklistKey(hashedKey));
+    public Mono<String> getUserRole(String userId) {
+        return redisTemplate.opsForValue().get(RedisKeys.userRolesKey(userId));
     }
 }

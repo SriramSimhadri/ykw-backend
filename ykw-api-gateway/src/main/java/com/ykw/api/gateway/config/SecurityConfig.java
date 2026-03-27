@@ -23,8 +23,8 @@ public class SecurityConfig {
                                 "/api/auth/register",
                                 "/api/auth/refresh")
                         .permitAll()
-                        .pathMatchers("/api/users/me").authenticated()
-                        .pathMatchers("/api/users/*").permitAll()
+                        .pathMatchers("/api/users/public/**").permitAll()
+                        .pathMatchers("/api/users/**").authenticated()
                         .pathMatchers("/internal/**").denyAll()
                         .anyExchange().authenticated()
                 )

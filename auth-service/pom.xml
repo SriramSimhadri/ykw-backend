@@ -35,6 +35,11 @@
             <artifactId>common-lib</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.ykw</groupId>
+            <artifactId>ykw-security-starter</artifactId>
+        </dependency>
+
         <!-- spring boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

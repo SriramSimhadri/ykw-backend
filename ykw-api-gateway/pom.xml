@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>api-gateway</artifactId>
-	<name>api-gateway</name>
+	<name>ykw-api-gateway</name>
 	<description>YKW api gateway</description>
     <packaging>jar</packaging>
 

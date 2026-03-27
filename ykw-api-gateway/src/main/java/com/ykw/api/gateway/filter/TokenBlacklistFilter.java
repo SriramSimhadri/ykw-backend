@@ -1,6 +1,6 @@
 package com.ykw.api.gateway.filter;
 
-import com.ykw.api.gateway.service.TokenBlacklistService;
+import com.ykw.api.gateway.service.CacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class TokenBlacklistFilter implements GlobalFilter, Ordered {
 
-    private final TokenBlacklistService tokenBlacklistService;
+    private final CacheService tokenBlacklistService;
 
     /**
      * 1. Get authenticated user (async)
@@ -47,7 +47,7 @@ public class TokenBlacklistFilter implements GlobalFilter, Ordered {
                         return unauthorized(exchange);
                     }
 
-                    return tokenBlacklistService.isBlacklisted(jti)
+                    return tokenBlacklistService.isTokenRevoked(jti)
                             .onErrorResume(e -> Mono.just(false)) // fail-open
                             .flatMap(isBlacklisted -> {
 

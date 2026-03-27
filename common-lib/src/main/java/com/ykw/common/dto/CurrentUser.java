@@ -1,4 +1,4 @@
-package com.ykw.auth.dto;
+package com.ykw.common.dto;
 
 import java.time.Instant;
 

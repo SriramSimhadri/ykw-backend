@@ -1,6 +1,6 @@
 spring:
   application:
-    name: api-gateway
+    name: ykw-api-gateway
 
   profiles:
     active: dev   # default

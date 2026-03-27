@@ -1,11 +1,8 @@
 package com.ykw.auth.service;
 
 import com.ykw.auth.security.JwtProvider;
-import com.ykw.common.keys.RedisKeys;
-import com.ykw.common.utility.HashUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -17,7 +14,7 @@ public class TokenServiceImpl implements TokenService {
 
     private final JwtProvider jwtProvider;
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final CacheService cacheService;
 
     @Value("${jwt.expiration}")
     private Duration expiration;
@@ -28,15 +25,11 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public void blacklistToken(String jti, Instant expiresAt) {
 
-        String hashedJti = HashUtil.hash(jti);
-
         Duration ttl = Duration.between(Instant.now(), expiresAt);
 
         if (ttl.isNegative() || ttl.isZero()) return;
 
-        String key = RedisKeys.blacklistKey(hashedJti);
-
-        redisTemplate.opsForValue().set(key, "revoked", ttl);
+        cacheService.cacheRevokedToken(jti, ttl);
     }
 
     @Override

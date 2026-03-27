@@ -8,7 +8,7 @@ import com.ykw.auth.mapper.UserMapper;
 import com.ykw.auth.model.User;
 import com.ykw.auth.model.UserStatus;
 import com.ykw.auth.repository.UserRepository;
-import com.ykw.auth.security.JwtProvider;
+import com.ykw.security.CurrentUserContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,9 @@ public class UserServiceImpl implements UserService {
 
     private final TokenService tokenService;
 
-    private final JwtProvider jwtProvider;
+    private final CurrentUserContext currentUserContext;
+
+    private final CacheService cacheService;
 
     /**
      * Handles new user registration
@@ -41,6 +43,8 @@ public class UserServiceImpl implements UserService {
         User user = createUser(request);
 
         String token = tokenService.generateAccessToken(user.getId(), user.getEmail(), user.getRole().name(), user.getStatus().name());
+
+        cacheService.cacheUserRole(user.getId(), user.getRole().name());
 
         return new AuthResponse()
                 .accessToken(token)
@@ -65,7 +69,10 @@ public class UserServiceImpl implements UserService {
         if (UserStatus.ACTIVE != user.getStatus())
             throw new RuntimeException("Account disabled");
 
+
         String accessToken = tokenService.generateAccessToken(user.getId(), user.getEmail(), user.getRole().name(), user.getStatus().name());
+
+        cacheService.cacheUserRole(user.getId(), user.getRole().name());
 
         return new AuthResponse()
                 .accessToken(accessToken)
@@ -78,7 +85,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void logout() {
 
-        var user = jwtProvider.getCurrentUser();
+        var user = currentUserContext.getCurrentUser();
 
         tokenService.blacklistToken(user.jti(), user.expiresAt());
     }

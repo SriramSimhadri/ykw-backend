@@ -1,4 +1,4 @@
-DB_URL: jdbc:postgresql://postgres:5432/profile_db
+DB_URL: jdbc:postgresql://postgres:5432/user_db
 DB_USER: ${DB_USER}
 DB_PASSWORD: ${DB_PASSWORD}
 
@@ -6,3 +6,5 @@ AUTH_SERVICE_URL: http://auth-service:8090
 
 REDIS_HOST: redis
 REDIS_PORT: 6379
+
+INTERNAL_TOKEN: ${GATEWAY_SECRET_ONLY}

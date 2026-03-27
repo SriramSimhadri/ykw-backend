@@ -26,7 +26,8 @@
         <module>article-likes-service</module>
         <module>article-comments-service</module>
         <module>follows-service</module>
-        <module>api-gateway</module>
+        <module>ykw-api-gateway</module>
+        <module>ykw-security-starter</module>
     </modules>
 
     <properties>
@@ -51,6 +52,12 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-redis</artifactId>
             </dependency>-->
+
+            <dependency>
+                <groupId>com.ykw</groupId>
+                <artifactId>ykw-security-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- Lombok -->
             <dependency>

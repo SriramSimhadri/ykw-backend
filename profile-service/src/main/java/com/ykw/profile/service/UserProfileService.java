@@ -8,6 +8,7 @@ import com.ykw.profile.error.UnauthorizedException;
 import com.ykw.profile.mapper.UserProfileMapper;
 import com.ykw.profile.model.Profile;
 import com.ykw.profile.repository.UserProfileRepository;
+import com.ykw.security.CurrentUserContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +26,10 @@ public class UserProfileService {
 
     private final UserProfileMapper mapper;
 
-    private final CurrentUserProvider currentUserProvider;
+    private final CurrentUserContext currentUserContext;
 
     public UserProfile getCurrentUserProfile() {
-        Long userId = currentUserProvider.getUserId();
+        Long userId = currentUserContext.getCurrentUser().userId();
 
         Profile entity = repository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
@@ -38,7 +39,7 @@ public class UserProfileService {
 
     @Transactional
     public UserProfile upsertCurrentUserProfile(UpdateUserProfileRequest request) {
-        Long userId = Optional.ofNullable(currentUserProvider.getUserId())
+        Long userId = Optional.ofNullable(currentUserContext.getCurrentUser().userId())
                 .orElseThrow(() -> new UnauthorizedException("User not authenticated"));
 
         Profile entity = repository.findById(userId).orElseGet(() -> {
@@ -67,15 +68,7 @@ public class UserProfileService {
 
 
     public PagedUserResponse searchUsers(String query, Pageable pageable) {
-       /* Page<UserProfileEntity> page = repository.searchByName(query, pageable);
-
-        return new PagedUserResponse(
-                page.getContent().stream().map(mapper::toDto).toList(),
-                page.getNumber(),
-                page.getSize(),
-                page.getTotalElements(),
-                page.getTotalPages()
-        );*/
+        //TODO: Implement search
         return null;
     }
 }

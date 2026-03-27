@@ -2,3 +2,6 @@ jwt:
   private-key: ${JWT_PRIVATE_KEY:classpath:keys/private.pem}
   public-key: ${JWT_PUBLIC_KEY:classpath:keys/public.pem}
   expiration: ${JWT_EXPIRATION:15m}
+
+internal:
+  token: ${INTERNAL_TOKEN}

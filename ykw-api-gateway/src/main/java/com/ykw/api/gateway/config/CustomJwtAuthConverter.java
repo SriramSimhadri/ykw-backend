@@ -1,6 +1,6 @@
 package com.ykw.api.gateway.config;
 
-import com.ykw.api.gateway.service.TokenBlacklistService;
+import com.ykw.api.gateway.service.CacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -22,7 +21,7 @@ import java.util.List;
 @Slf4j
 public class CustomJwtAuthConverter implements Converter<Jwt, Mono<AbstractAuthenticationToken>> {
 
-    private final TokenBlacklistService blacklistService;
+    private final CacheService redisUserService;
 
     @Override
     public Mono<AbstractAuthenticationToken> convert(Jwt jwt) {
@@ -41,46 +40,36 @@ public class CustomJwtAuthConverter implements Converter<Jwt, Mono<AbstractAuthe
                             log.warn("JWT rejected: token is blacklisted, jti={}", jti);
                             return Mono.error(new BadCredentialsException("Token revoked"));
                         }
-                        return Mono.just(buildAuthentication(jwt));
+                        return buildAuthentication(jwt);
                     });
         });
     }
 
     /**
      * Checks whether the token is blacklisted.
-     * Fail-open strategy: if Redis fails, allow request but log error.
      */
     private Mono<Boolean> checkBlacklist(String jti) {
-        return blacklistService.isBlacklisted(jti)
+        return redisUserService.isTokenRevoked(jti)
                 .doOnError(e ->
                         log.error("Redis error during blacklist check, jti={}", jti, e))
-                .onErrorResume(e -> Mono.just(false)); // fail-open
+                .onErrorResume(e ->
+                        Mono.error(new BadCredentialsException("Token validation failed")));
     }
 
-    /**
-     * Builds authentication object from JWT.
-     */
-    private AbstractAuthenticationToken buildAuthentication(Jwt jwt) {
+    private Mono<AbstractAuthenticationToken> buildAuthentication(Jwt jwt) {
 
-        // Optionally extract authorities/roles here
-        Collection<GrantedAuthority> authorities = extractAuthorities(jwt);
+        String userId = jwt.getSubject();
 
-        return new JwtAuthenticationToken(jwt, authorities);
-    }
+        return redisUserService.getUserRole(userId)
+                .switchIfEmpty(Mono.error(new BadCredentialsException("No role assigned")))
+                .map(role -> {
+                    if (!List.of("USER", "ADMIN").contains(role)) {
+                        throw new BadCredentialsException("Invalid role");
+                    }
+                    Collection<GrantedAuthority> authorities =
+                            List.of(new SimpleGrantedAuthority("ROLE_" + role));
 
-    /**
-     * Extract roles/authorities from JWT.
-     * Customize based on your token structure.
-     */
-    private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
-
-        // Example: "roles": ["USER", "ADMIN"]
-        String role = jwt.getClaim("role");
-
-        if (role == null || role.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+                    return new JwtAuthenticationToken(jwt, authorities);
+                });
     }
 }
