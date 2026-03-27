@@ -1,28 +1,30 @@
 # ykw-backend
 
-- YKW is a modern content-sharing platform that allows users to write, publish, and interact with articles. 
+- YKW (you know what) is a modern content-sharing platform that allows users to write, publish, and interact with articles.
 - It is designed using a microservices architecture, enabling each service to scale independently and communicate via APIs.
-- Core Features
-    - User Management (User-Service)
-      - Register, authenticate, and manage user profiles.
-      - Follow/unfollow other users and maintain follower/following counts.
-    - Articles (Article-Service)
+- Core Features 
+    - Authorization Management (ykw-auth-service)
+      - Register, authenticate manage users.
+    - User Management (ykw-profile-service)
+      - Manage user profiles.
+      - Maintain follower/following counts.
+    - Articles (ykw-article-service)
        - Users can create, edit, publish, or delete articles (drafts or published).
        - Supports article tags, slugs, cover images, reading time, and article stats.
        - Personalized feeds for users based on authors they follow.
-    - Article Likes (Article-Likes Service)
+    - Article Likes (ykw-article-likes-service)
        - Users can like/unlike articles.
        - Track total likes per article and which users liked it.
-    - Comments (Article-Comments Service)
+    - Article Comments (ykw-article-comments-service)
        - Users can comment on articles, update/delete their comments, and like/unlike comments.
        - Maintains likes count per comment and provides paginated lists.
-    - Follows (Follows Service)
+    - Follows (ykw-follow-service)
        - Users can follow/unfollow other users.
        - Provides paginated lists of followers and following users.
 
 - Architecture & Design
-  - Microservices-based: User, Article, Article-Likes, Article-Comments, and Follows services operate independently, each with its own database.
-  - API-first: Services communicate via REST APIs; user and article info is fetched on-demand across services.
+  - Microservices-based: auth-service, profile-serivce, article, article-likes, article-comments, and follows services operate independently, each with its own database.
+  - Contract-first: Services communicate via REST APIs following contract
   - Eventual consistency: Counts like likes_count, comments_count, and followers_count can be updated asynchronously for scalability.
   - Scalable & Production-ready: Each service has indexes and constraints for performance and data integrity.
   - Security: Authentication and authorization are handled via JWT tokens, ensuring secure access to protected endpoints.
@@ -31,47 +33,37 @@ In short: YKW lets users create, share, discover, and engage with content, while
 
 # YKW Architecture (Design IN PROGRESS) looks like below
 
-                                                                    Client
-                                                                       │
-                                                                       ▼
-                                                                  Load Balancer
-                                                                        │
-                                                            ┌───────────┼───────────┐
-                                                            ▼           ▼           ▼
-                                                        API Gateway  API Gateway  API Gateway
-                                                            │           │           │
-                                                            └───────────┼───────────┘
-                                                                        ▼
-                                                                Microservices Layer
-                                                            ┌──────┬──────┬──────┬──────┐
-                                                            ▼      ▼      ▼      ▼      ▼
-                                                            Auth   User  Article  Likes  Comments
-                                                           Service Service Service Service Service
+################################ In Progress ############################
+
+                                                                   
 
 
+# auth-service requirements:
 
-# user-service requirements:
-
-- The user-service is primarily responsible for user management. 
+- The auth-service is primarily responsible for user management. 
   - Registration and login
-  - Profile management
-  - Following/unfollowing users
-  - Retrieving user details and lists
-  - Updating user statistics (followers/following count)
- It should NOT handle articles/posts - those go to the article-service. Instead, user-service can provide user profile info for other services via APIs.
  
-## user-service API endpoints:
+## auth-service API endpoints:
 
 | HTTP(S) Method | Endpoint                  | Description                              | Notes                                                                      |
 |----------------|---------------------------|------------------------------------------|----------------------------------------------------------------------------|
 | POST           | /users/register           | Create a new user account                | Validate email uniqueness, hash password (BCrypt)                          |
 | POST           | /users/login              | Authenticate user and return JWT         | Use Spring Security with JWT                                               |
+
+
+# profile-service requirements:
+
+- The profile-service is primarily responsible for user management. 
+  - Profile management
+  - Retrieving user details and lists
+  - Updating user statistics (followers/following count)
+ It should NOT handle articles/posts - those go to the article-service. Instead, profile-service can provide user profile info for other services via APIs.
+ 
+## user-service API endpoints:
+
+| HTTP(S) Method | Endpoint                  | Description                              | Notes                                                                      |
+|----------------|---------------------------|------------------------------------------|----------------------------------------------------------------------------|
 | GET            | /users/{id}               | Get user profile by ID                   | Return public info (name, bio, profile image, followers/following count)   |
-| PUT            | /users/{id}               | Update user profile                      | Authenticated user only; allow updating name, bio, profile_image_url       |
-| GET            | /users/{id}/followers     | Get list of followers                    | Paginated; return only IDs and names (or full profile if needed)           |
-| GET            | /users/{id}/following     | Get list of users this user follows      | Paginated                                                                  |
-| POST           | /users/{id}/follow        | Follow a user                            | Authenticated user; increments followers_count/following_count atomically  |
-| POST           | /users/{id}/unfollow      | Unfollow a user                          | Authenticated user; decrements counts atomically                           |
 | GET            | /users/search             | Search users by name/email               | Support query params: `?q=<keyword>&page=1&size=20`                        |
 | GET            | /users/me                 | Get currently authenticated user profile | Use JWT from `Authorization` header                                        |
 
