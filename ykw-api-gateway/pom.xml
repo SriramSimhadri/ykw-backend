@@ -8,7 +8,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>api-gateway</artifactId>
+    <artifactId>ykw-api-gateway</artifactId>
 	<name>ykw-api-gateway</name>
 	<description>YKW api gateway</description>
     <packaging>jar</packaging>
@@ -84,7 +84,7 @@
 
         <dependency>
             <groupId>com.ykw</groupId>
-            <artifactId>common-lib</artifactId>
+            <artifactId>ykw-common</artifactId>
         </dependency>
 
         <dependency>

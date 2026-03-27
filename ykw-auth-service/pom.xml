@@ -10,20 +10,29 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>profile-service</artifactId>
-    <name>User Profile Service</name>
+    <artifactId>ykw-auth-service</artifactId>
+    <name>ykw-auth-service</name>
     <packaging>jar</packaging>
 
     <dependencies>
+
+        <!-- contract -->
         <dependency>
             <groupId>com.ykw</groupId>
-            <artifactId>api-contracts</artifactId>
+            <artifactId>ykw-api-contracts</artifactId>
             <version>1.0.0</version>
         </dependency>
 
+        <!-- open api-->
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+        </dependency>
+
+        <!-- common lib -->
         <dependency>
             <groupId>com.ykw</groupId>
-            <artifactId>common-lib</artifactId>
+            <artifactId>ykw-common</artifactId>
         </dependency>
 
         <dependency>
@@ -31,6 +40,7 @@
             <artifactId>ykw-security-starter</artifactId>
         </dependency>
 
+        <!-- spring boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -40,6 +50,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -55,17 +66,23 @@
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
         </dependency>
 
-        <!-- Flyway -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        </dependency>
+
+        <!-- flyway -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
 
-        <!-- Database -->
+        <!-- database -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -79,6 +96,12 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+        </dependency>
+
+        <!-- security -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -96,6 +119,7 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- mapstruct -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -113,18 +137,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openapitools</groupId>
-            <artifactId>jackson-databind-nullable</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
         <!-- Testing -->
@@ -155,15 +169,16 @@
                         </goals>
                         <configuration>
                             <inputSpec>
-                                ${project.parent.basedir}/api-contracts/src/main/resources/openapi/profile-service.yaml
+                                ${project.parent.basedir}/ykw-api-contracts/src/main/resources/openapi/ykw-auth-service.yaml
                             </inputSpec>
                             <generatorName>spring</generatorName>
-                            <apiPackage>com.ykw.profile.api</apiPackage>
-                            <modelPackage>com.ykw.profile.dto</modelPackage>
+                            <apiPackage>com.ykw.auth.api</apiPackage>
+                            <modelPackage>com.ykw.auth.dto</modelPackage>
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <useTags>true</useTags>
+                                <useSpringController>true</useSpringController>
                             </configOptions>
                         </configuration>
                     </execution>

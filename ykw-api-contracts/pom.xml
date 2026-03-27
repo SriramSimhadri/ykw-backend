@@ -6,7 +6,7 @@
         <artifactId>platform</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>api-contracts</artifactId>
-    <name>Archetype - api-contracts</name>
+    <artifactId>ykw-api-contracts</artifactId>
+    <name>ykw-api-contracts</name>
     <url>http://maven.apache.org</url>
 </project>

@@ -11,7 +11,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>article-likes-service</artifactId>
+    <artifactId>ykw-article-likes-service</artifactId>
     <name>article-likes-service</name>
     <description>Article Likes Microservice</description>
     <packaging>jar</packaging>

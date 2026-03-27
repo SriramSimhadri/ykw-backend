@@ -18,14 +18,14 @@
     <name>platform</name>
 
     <modules>
-        <module>common-lib</module>
-        <module>api-contracts</module>
-        <module>auth-service</module>
-        <module>profile-service</module>
-        <module>article-service</module>
-        <module>article-likes-service</module>
-        <module>article-comments-service</module>
-        <module>follows-service</module>
+        <module>ykw-common</module>
+        <module>ykw-api-contracts</module>
+        <module>ykw-auth-service</module>
+        <module>ykw-profile-service</module>
+        <module>ykw-article-service</module>
+        <module>ykw-article-likes-service</module>
+        <module>ykw-article-comments-service</module>
+        <module>ykw-follows-service</module>
         <module>ykw-api-gateway</module>
         <module>ykw-security-starter</module>
     </modules>
@@ -89,7 +89,7 @@
             <!-- Internal shared library -->
             <dependency>
                 <groupId>com.ykw</groupId>
-                <artifactId>common-lib</artifactId>
+                <artifactId>ykw-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

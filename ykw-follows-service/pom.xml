@@ -11,7 +11,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>follows-service</artifactId>
+    <artifactId>ykw-follows-service</artifactId>
     <name>follows-service</name>
     <description>Follows Microservice</description>
     <packaging>jar</packaging>

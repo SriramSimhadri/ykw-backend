@@ -11,7 +11,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>common-lib</artifactId>
+    <artifactId>ykw-common</artifactId>
     <name>common-lib</name>
     <description>Common Lib</description>
     <packaging>jar</packaging>
