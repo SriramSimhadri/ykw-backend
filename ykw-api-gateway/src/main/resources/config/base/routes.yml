@@ -5,7 +5,6 @@ spring:
         connect-timeout: 2000   # fail fast if service is unreachable (2s)
         response-timeout: 5s    # don't wait forever for slow responses
       routes:
-        # ---------------- AUTH SERVICE ----------------
         - id: auth-service-api
           uri: ${AUTH_SERVICE_URL}
           predicates:
@@ -16,6 +15,9 @@ spring:
                 retries: 2
                 methods: GET
                 statuses: BAD_GATEWAY, GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR
+                exceptions:
+                  - java.io.IOException
+                  - java.net.ConnectException
                 backoff:
                   firstBackoff: 100ms # retry1 - wait 100ms, retry 2 - wait 200ms, retry 3 -> wait 400ms
                   maxBackoff: 1s
@@ -33,7 +35,6 @@ spring:
           filters:
             - StripPrefix=2  # remove /internal/auth before forwarding
 
-        # ---------------- PROFILE SERVICE ----------------
         - id: profile-service-api
           uri: ${PROFILE_SERVICE_URL}
           predicates:
@@ -63,7 +64,6 @@ spring:
           filters:
             - StripPrefix=2
 
-        # ---------------- ARTICLE SERVICE ----------------
         - id: article-service
           uri: ${ARTICLE_SERVICE_URL}
           predicates:
@@ -95,7 +95,6 @@ spring:
                 name: likesServiceCircuitBreaker
                 fallbackUri: forward:/fallback/likes
 
-        # ---------------- COMMENTS SERVICE ----------------
         - id: article-comments-service
           uri: ${COMMENTS_SERVICE_URL}
           predicates:
@@ -111,7 +110,6 @@ spring:
                 name: commentsServiceCircuitBreaker
                 fallbackUri: forward:/fallback/comments
 
-        # ---------------- FOLLOWS SERVICE ----------------
         - id: follows-service
           uri: ${FOLLOWS_SERVICE_URL}
           predicates:

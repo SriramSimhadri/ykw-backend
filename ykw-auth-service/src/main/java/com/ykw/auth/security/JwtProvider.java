@@ -11,6 +11,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
+import static com.ykw.common.constants.Constants.*;
+
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
@@ -23,17 +25,16 @@ public class JwtProvider {
     @Value("${spring.application.name}")
     private String serviceName;
 
-
     public String generateAccessToken(Long userId, String email, String role, String status) {
         Instant now = Instant.now();
 
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .issuer(serviceName)
-                .claim("email", email)
-                .claim("role", role)
-                .claim("status", status)
-                .claim("userId", userId)
-                .claim("jti", UUID.randomUUID().toString()) // to uniquely identify the token
+                .claim(USER_EMAIL, email)
+                .claim(USER_ROLE, role)
+                .claim(STATUS, status)
+                .claim(USER_ID, userId)
+                .claim(JTI, UUID.randomUUID().toString()) // to uniquely identify the token
                 .subject(String.valueOf(userId))
                 .issuedAt(now)
                 .expiresAt(now.plus(expiration))

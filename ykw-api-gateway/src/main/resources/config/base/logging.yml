@@ -4,6 +4,7 @@ logging:
     org.springframework: WARN
     org.springframework.security: WARN
     org.springframework.cloud.gateway: WARN
+    org.springframework.cloud.gateway.filter.factory.RetryGatewayFilterFactory: WARN
     reactor.netty: WARN
     io.netty: WARN
     com.ykw: INFO

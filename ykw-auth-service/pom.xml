@@ -37,7 +37,7 @@
 
         <dependency>
             <groupId>com.ykw</groupId>
-            <artifactId>ykw-security-starter</artifactId>
+            <artifactId>ykw-common</artifactId>
         </dependency>
 
         <!-- spring boot -->

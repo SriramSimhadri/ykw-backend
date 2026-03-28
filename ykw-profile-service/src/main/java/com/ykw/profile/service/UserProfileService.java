@@ -8,7 +8,7 @@ import com.ykw.profile.error.UnauthorizedException;
 import com.ykw.profile.mapper.UserProfileMapper;
 import com.ykw.profile.model.Profile;
 import com.ykw.profile.repository.UserProfileRepository;
-import com.ykw.security.CurrentUserContext;
+import com.ykw.common.security.CurrentUserContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

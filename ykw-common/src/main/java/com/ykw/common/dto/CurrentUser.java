@@ -5,5 +5,6 @@ import java.time.Instant;
 public record CurrentUser(
         Long userId,
         String jti,
-        Instant expiresAt
+        Instant expiresAt,
+        String roles
 ) {}

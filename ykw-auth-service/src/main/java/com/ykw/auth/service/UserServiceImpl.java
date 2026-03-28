@@ -8,7 +8,7 @@ import com.ykw.auth.mapper.UserMapper;
 import com.ykw.auth.model.User;
 import com.ykw.auth.model.UserStatus;
 import com.ykw.auth.repository.UserRepository;
-import com.ykw.security.CurrentUserContext;
+import com.ykw.common.security.CurrentUserContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -110,7 +110,7 @@ components:
 
   parameters:
     TraceIdHeader:
-      name: X-Request-ID
+      name: X-Trace-ID
       in: header
       required: true
       description: Unique trace identifier used for request tracing across services

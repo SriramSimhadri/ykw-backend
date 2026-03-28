@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.ykw.common.constants.GatewayConstants.STATUS_UP;
+import static com.ykw.common.constants.Constants.STATUS_UP;
 
 /**
  * GatewayHealthIndicator aggregates the health status of all downstream

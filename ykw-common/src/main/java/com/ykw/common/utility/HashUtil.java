@@ -1,6 +1,7 @@
 package com.ykw.common.utility;
 
 import java.nio.charset.StandardCharsets;
+import java.security.AlgorithmConstraints;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
