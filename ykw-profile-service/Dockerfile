@@ -6,7 +6,7 @@ WORKDIR /build
 # Now copy the full source code
 COPY . .
 
-# Build only ykw-ykw-profile-service (no need to rebuild other services)
+# Build only ykw-profile-service (no need to rebuild other services)
 RUN mvn -q -pl ykw-profile-service -am -DskipTests package
 
 # ---- runtime phase ----

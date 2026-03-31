@@ -6,7 +6,7 @@ WORKDIR /build
 # Now copy the full source code
 COPY . .
 
-# Build only ykw-ykw-auth-service (no need to rebuild other services)
+# Build only ykw-auth-service (no need to rebuild other services)
 RUN mvn -q -pl ykw-auth-service -am -DskipTests package
 
 # ---- runtime phase ----

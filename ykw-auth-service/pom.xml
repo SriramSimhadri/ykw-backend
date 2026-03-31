@@ -35,11 +35,6 @@
             <artifactId>ykw-common</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.ykw</groupId>
-            <artifactId>ykw-common</artifactId>
-        </dependency>
-
         <!-- spring boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
