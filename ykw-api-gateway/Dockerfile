@@ -1,0 +1,38 @@
+# ---- build phase -------
+FROM maven:3.9.11-eclipse-temurin-21 AS builder
+
+WORKDIR /build
+
+# Now copy the full source code
+COPY . .
+
+# Build only ykw-ykw-api-gateway (no need to rebuild other services)
+RUN mvn -q -pl ykw-api-gateway -am -DskipTests package
+
+# ---- runtime phase ----
+FROM eclipse-temurin:21-jre-alpine
+
+# Create a non-root user (never run containers as root in prod)
+# It's a small step but avoids a lot of security headaches later
+RUN addgroup -S appuser && adduser -S appuser -G appuser
+
+WORKDIR /app
+
+# Copy only the built jar for ykw-api-gateway
+COPY --from=builder /build/ykw-api-gateway/target/*.jar app.jar
+
+# Give ownership to non-root user
+RUN chown appuser:appuser app.jar
+
+# Switch to safer user
+USER appuser
+
+# JVM tuning for containers
+# JVM will size heap based on container limits instead of host machine
+# MaxRAMPercentage=75 means it will use up to 75% of container memory
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+
+EXPOSE 8080
+
+# Using sh -c so JAVA_OPTS gets expanded properly
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
