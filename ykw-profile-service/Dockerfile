@@ -3,39 +3,34 @@ FROM maven:3.9.11-eclipse-temurin-21 AS builder
 
 WORKDIR /build
 
-# Copy only pom.xml first (dependency caching)
-COPY pom.xml .
-RUN mvn -q -e -DskipTests dependency:go-offline
+# Now copy the full source code
+COPY . .
 
-# Copy source code
-COPY src ./src
-
-# Build the application
-RUN mvn -q -DskipTests package
+# Build only ykw-ykw-profile-service (no need to rebuild other services)
+RUN mvn -q -pl ykw-profile-service -am -DskipTests package
 
 # ---- runtime phase ----
-FROM eclipse-temurin:21-jdk-jammy
+FROM eclipse-temurin:21-jre-alpine
 
-# Create non-root user (security best practice)
-# otherwise if hackers get root access, system will gets compromise
-RUN useradd -ms /bin/bash appuser
+# Create a non-root user (never run containers as root in prod)
+RUN addgroup -S appuser && adduser -S appuser -G appuser
 
 WORKDIR /app
 
-# Copy built jar from builder stage
-COPY --from=builder /build/target/*.jar app.jar
+# Copy only the built jar for ykw-profile-service
+COPY --from=builder /build/ykw-profile-service/target/*.jar app.jar
 
-# Set ownership
+# Give ownership to non-root user
 RUN chown appuser:appuser app.jar
 
-# Switch to non-root user
+# Switch to safer user
 USER appuser
 
-# JVM tuning for containers
-# with these options containers memeory will be consumed upto 75 %, example
-# if you run the container with 1g memory, it will consumer 750MB
+# JVM will size heap based on container limits instead of host machine
+# MaxRAMPercentage=75 means it will use up to 75% of container memory
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
 
 EXPOSE 8080
 
+# Using sh -c so JAVA_OPTS gets expanded properly
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

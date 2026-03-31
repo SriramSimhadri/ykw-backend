@@ -13,7 +13,6 @@ RUN mvn -q -pl ykw-api-gateway -am -DskipTests package
 FROM eclipse-temurin:21-jre-alpine
 
 # Create a non-root user (never run containers as root in prod)
-# It's a small step but avoids a lot of security headaches later
 RUN addgroup -S appuser && adduser -S appuser -G appuser
 
 WORKDIR /app
@@ -27,7 +26,6 @@ RUN chown appuser:appuser app.jar
 # Switch to safer user
 USER appuser
 
-# JVM tuning for containers
 # JVM will size heap based on container limits instead of host machine
 # MaxRAMPercentage=75 means it will use up to 75% of container memory
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
