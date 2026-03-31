@@ -42,7 +42,8 @@ jobs:
       - name: Build and Push Image
         uses: docker/build-push-action@v5
         with:
-          context: ./${{ matrix.service }}
+          context: .
+          file: ./${{ matrix.service }}/Dockerfile
           push: true
           tags: |
             ghcr.io/${{ steps.owner.outputs.OWNER }}/${{ matrix.service }}:latest
