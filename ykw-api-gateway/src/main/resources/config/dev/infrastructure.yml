@@ -8,12 +8,12 @@ gateway:
   health:
     interval: 5000
     services:
-      auth-service: http://localhost:8090
-      profile-service: http://localhost:8091
-      article-service: http://localhost:8092
-      article-likes-service: http://localhost:8093
-      article-comments-service: http://localhost:8094
-      article-follows-service: http://localhost:8095
+      ykw-auth-service: http://localhost:8090
+      ykw-profile-service: http://localhost:8091
+      ykw-article-service: http://localhost:8092
+      ykw-article-likes-service: http://localhost:8093
+      ykw-article-comments-service: http://localhost:8094
+      ykw-article-follows-service: http://localhost:8095
 
 AUTH_SERVICE_URL: http://localhost:8090
 PROFILE_SERVICE_URL: http://localhost:8091
