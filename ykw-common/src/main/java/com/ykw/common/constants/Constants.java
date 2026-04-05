@@ -2,11 +2,7 @@ package com.ykw.common.constants;
 
 public interface Constants {
 
-    String STATUS_UP = "UP";
-
-    String STATUS_DOWN = "DOWN";
-
-    String TRACE_ID = "traceId";
+    String TRACE_ID = "trace_id";
 
     String USER_ID = "id";
 
