@@ -3,10 +3,10 @@ package com.ykw.auth.configuration;
 import com.ykw.common.filter.LoggingFilter;
 import com.ykw.common.filter.RequestContextFilter;
 import com.ykw.common.security.CurrentUserContext;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Tracer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -24,6 +24,11 @@ public class BeanConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public Tracer tracer() {
+        return GlobalOpenTelemetry.getTracer("ykw-auth-service");
     }
 
 /*

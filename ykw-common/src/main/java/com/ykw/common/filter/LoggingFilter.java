@@ -22,14 +22,20 @@ public class LoggingFilter extends OncePerRequestFilter {
         long startTime = System.currentTimeMillis();
 
         try {
-            LogUtil.info(LogEvent.create("REQUEST_RECEIVED").path(request.getRequestURI()).method(request.getMethod()));
+            LogUtil.info(LogEvent.create("REQUEST_RECEIVED")
+                    .path(request.getRequestURI())
+                    .method(request.getMethod()));
             filterChain.doFilter(request, response);
         } finally {
 
             long latency = System.currentTimeMillis() - startTime;
             int status = response.getStatus();
 
-            LogUtil.info(LogEvent.create("REQUEST_COMPLETED").status(status).latency(latency).path(request.getRequestURI()).method(request.getMethod()));
+            LogUtil.info(LogEvent.create("REQUEST_COMPLETED").
+                    status(status)
+                    .latency(latency)
+                    .path(request.getRequestURI())
+                    .method(request.getMethod()));
         }
     }
 }

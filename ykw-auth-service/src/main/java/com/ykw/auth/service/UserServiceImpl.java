@@ -8,6 +8,8 @@ import com.ykw.auth.mapper.UserMapper;
 import com.ykw.auth.model.User;
 import com.ykw.auth.model.UserStatus;
 import com.ykw.auth.repository.UserRepository;
+import com.ykw.common.logging.LogEvent;
+import com.ykw.common.logging.LogUtil;
 import com.ykw.common.security.CurrentUserContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import static com.ykw.common.constants.Constants.USER_EMAIL;
+import static com.ykw.common.constants.Constants.USER_ROLE;
 
 @Service
 @Slf4j
@@ -40,11 +45,16 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public AuthResponse registerUser(final UserRegisterRequest request) {
+
+        LogUtil.info(LogEvent.create("USER_CREATE_INIT").add(USER_EMAIL, request.getEmail()));
+
         User user = createUser(request);
 
         String token = tokenService.generateAccessToken(user.getId(), user.getEmail(), user.getRole().name(), user.getStatus().name());
 
         cacheService.cacheUserRole(user.getId(), user.getRole().name());
+
+        LogUtil.info(LogEvent.create("USER_CREATED").userId(user.getId()).add(USER_ROLE, user.getRole().name()));
 
         return new AuthResponse()
                 .accessToken(token)
@@ -59,20 +69,42 @@ public class UserServiceImpl implements UserService {
      * @param loginRequest login request contains user credentials
      * @return token + user unique information
      */
-    public AuthResponse loginUser(final LoginRequest loginRequest, final String traceId) {
+    public AuthResponse loginUser(final LoginRequest loginRequest) {
+
+        LogUtil.info(LogEvent.create("LOGIN_PROCESSING").add("email", loginRequest.getEmail()));
+
         User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid Credentials"));
+                .orElseThrow(() -> {
+                    LogUtil.warn(LogEvent.create("LOGIN_FAILED_USER_NOT_FOUND")
+                            .add("email", loginRequest.getEmail())
+                    );
+                    return new RuntimeException("Invalid Credentials");
+                });
 
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPasswordHash()))
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPasswordHash())) {
+
+            LogUtil.warn(LogEvent.create("LOGIN_FAILED_INVALID_PASSWORD")
+                            .userId(user.getId())
+            );
             throw new RuntimeException("Invalid Credentials");
+        }
 
-        if (UserStatus.ACTIVE != user.getStatus())
+        if (UserStatus.ACTIVE != user.getStatus()) {
+            LogUtil.warn(
+                    LogEvent.create("LOGIN_FAILED_INACTIVE_USER")
+                            .userId(user.getId())
+            );
             throw new RuntimeException("Account disabled");
+        }
 
 
         String accessToken = tokenService.generateAccessToken(user.getId(), user.getEmail(), user.getRole().name(), user.getStatus().name());
 
         cacheService.cacheUserRole(user.getId(), user.getRole().name());
+
+        LogUtil.info(LogEvent.create("LOGIN_SUCCESS")
+                        .userId(user.getId())
+        );
 
         return new AuthResponse()
                 .accessToken(accessToken)
@@ -87,7 +119,17 @@ public class UserServiceImpl implements UserService {
 
         var user = currentUserContext.getCurrentUser();
 
+        LogUtil.info(LogEvent.create("LOGOUT_INIT")
+                .userId(user.userId())
+                .add("jti", user.jti())
+        );
+
         tokenService.blacklistToken(user.jti(), user.expiresAt());
+
+        LogUtil.info(
+                LogEvent.create("LOGOUT_SUCCESS")
+                        .userId(user.userId())
+        );
     }
 
     @Transactional

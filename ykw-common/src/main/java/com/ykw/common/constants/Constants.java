@@ -14,8 +14,6 @@ public interface Constants {
 
     String USER_EMAIL = "email";
 
-    String TRACE_HEADER = "X-Trace-ID";
-
     String USER_HEADER = "X-User-ID";
 
     String ROLE_HEADER = "X-User-Roles";

@@ -1,5 +1,7 @@
 package com.ykw.auth.error;
 
+import com.ykw.common.logging.LogEvent;
+import com.ykw.common.logging.LogUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -68,6 +70,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(Exception ex, HttpServletRequest request) {
+
+        LogUtil.error(LogEvent.create("UNHANDLED_EXCEPTION")
+                        .path(request.getRequestURI())
+                        .method(request.getMethod())
+                        .error(ex.getMessage())
+        );
+
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", ex.getMessage(), request);
     }
 

@@ -1,6 +1,8 @@
 package com.ykw.auth.service;
 
 import com.ykw.auth.security.JwtProvider;
+import com.ykw.common.logging.LogEvent;
+import com.ykw.common.logging.LogUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,9 +29,19 @@ public class TokenServiceImpl implements TokenService {
 
         Duration ttl = Duration.between(Instant.now(), expiresAt);
 
-        if (ttl.isNegative() || ttl.isZero()) return;
+        if (ttl.isNegative() || ttl.isZero()) {
+            LogUtil.warn(LogEvent.create("TOKEN_BLACKLIST_SKIPPED")
+                    .add("jti", jti)
+            );
+            return;
+        }
 
         cacheService.cacheRevokedToken(jti, ttl);
+
+        LogUtil.info(LogEvent.create("TOKEN_BLACKLISTED")
+                        .add("jti", jti)
+                        .add("ttlSeconds", ttl.getSeconds())
+        );
     }
 
     @Override

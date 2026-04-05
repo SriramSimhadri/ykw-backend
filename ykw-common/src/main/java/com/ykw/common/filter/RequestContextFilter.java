@@ -1,5 +1,6 @@
 package com.ykw.common.filter;
 
+import io.opentelemetry.api.trace.Span;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,8 +9,6 @@ import org.slf4j.MDC;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Optional;
-import java.util.UUID;
 
 import static com.ykw.common.constants.Constants.*;
 
@@ -24,8 +23,7 @@ public class RequestContextFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String traceId = Optional.ofNullable(request.getHeader(TRACE_HEADER)).orElse(UUID.randomUUID().toString());
-
+        String traceId = Span.current().getSpanContext().getTraceId();
         String userId = request.getHeader(USER_HEADER);
         String userRoles = request.getHeader(ROLE_HEADER);
 
@@ -39,8 +37,6 @@ public class RequestContextFilter extends OncePerRequestFilter {
             if (userRoles != null && !userRoles.isBlank()) {
                 MDC.put(USER_ROLE, userRoles);
             }
-
-            response.setHeader(TRACE_HEADER, traceId);
 
             if (userId != null) {
                 response.setHeader(USER_HEADER, userId);

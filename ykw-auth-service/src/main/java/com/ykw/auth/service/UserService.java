@@ -8,7 +8,7 @@ public interface UserService {
 
     AuthResponse registerUser(final UserRegisterRequest request);
 
-    AuthResponse loginUser(final LoginRequest loginRequest, final String traceId);
+    AuthResponse loginUser(final LoginRequest loginRequest);
 
     void logout();
 }
