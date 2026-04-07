@@ -14,6 +14,8 @@ public interface Constants {
 
     String USER_EMAIL = "email";
 
+    String USER_NAME = "name";
+
     String USER_HEADER = "X-User-ID";
 
     String ROLE_HEADER = "X-User-Roles";
