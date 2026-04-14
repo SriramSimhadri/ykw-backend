@@ -33,10 +33,10 @@ public class LogUtil {
                 message.append(key)
                         .append("=")
                         .append(value)
-                        .append(" ");
+                        .append(",");
             }
         });
-        String finalMessage = message.toString().trim();
+        String finalMessage = message.substring(0, message.length()-1);
         switch (level) {
             case INFO -> log.info(finalMessage);
             case WARN -> log.warn(finalMessage);
