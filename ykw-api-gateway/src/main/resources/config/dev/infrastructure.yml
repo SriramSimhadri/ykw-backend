@@ -21,3 +21,5 @@ ARTICLE_SERVICE_URL: http://localhost:8092
 LIKES_SERVICE_URL: http://localhost:8093
 COMMENTS_SERVICE_URL: http://localhost:8094
 FOLLOWS_SERVICE_URL: http://localhost:8095
+
+OTEL_METRICS_URL: http://otel-collector:4318/v1/metrics

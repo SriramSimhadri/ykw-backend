@@ -1,9 +1,6 @@
 management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-
-  endpoint:
-    health:
-      show-details: always
+  otlp:
+    metrics:
+      export:
+        enabled: true
+        url: ${OTEL_METRICS_URL}

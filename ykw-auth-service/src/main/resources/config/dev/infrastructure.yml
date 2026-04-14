@@ -8,3 +8,5 @@ REDIS_PORT: 6379
 AUTH_SERVICE_URL: http://localhost:8090
 
 INTERNAL_TOKEN: gateway-secret
+
+OTEL_METRICS_URL: http://otel-collector:4318/v1/metrics

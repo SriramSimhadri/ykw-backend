@@ -8,3 +8,5 @@ REDIS_HOST: redis
 REDIS_PORT: 6379
 
 INTERNAL_TOKEN: ${GATEWAY_SECRET_ONLY}
+
+OTEL_METRICS_URL: http://otel-collector:4318/v1/metrics
