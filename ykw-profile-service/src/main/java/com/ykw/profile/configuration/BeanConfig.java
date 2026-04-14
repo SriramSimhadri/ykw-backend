@@ -1,4 +1,4 @@
-package com.ykw.auth.configuration;
+package com.ykw.profile.configuration;
 
 import com.ykw.common.filter.LoggingFilter;
 import com.ykw.common.filter.RequestContextFilter;
@@ -28,18 +28,8 @@ public class BeanConfig {
 
     @Bean
     public Tracer tracer() {
-        return GlobalOpenTelemetry.getTracer("ykw-auth-service");
+        return GlobalOpenTelemetry.getTracer("ykw-profile-service");
     }
-
-/*
-    @Bean(name = "customRequestContextFilter")
-    public FilterRegistrationBean<RequestContextFilter> customRequestContextFilter() {
-        FilterRegistrationBean<RequestContextFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new RequestContextFilter());
-  //      registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        return registration;
-    }
-*/
 
     @Bean(name = "requestLoggingFilter")
     public LoggingFilter requestLoggingFilter() {

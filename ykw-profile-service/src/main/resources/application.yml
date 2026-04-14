@@ -1,6 +1,6 @@
 spring:
   application:
-    name: profile-service
+    name: ykw-profile-service
 
   profiles:
     active: dev
@@ -11,7 +11,6 @@ spring:
       - classpath:config/base/security.yml
       - classpath:config/base/logging.yml
       - classpath:config/base/management.yml
-
       - classpath:config/${spring.profiles.active}/infrastructure.yml
 
 server:

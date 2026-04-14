@@ -16,8 +16,6 @@ paths:
         - auth
       summary: Register a new user
       operationId: registerUser
-      parameters:
-        - $ref: '#/components/parameters/TraceIdHeader'
       requestBody:
         required: true
         content:
@@ -42,8 +40,6 @@ paths:
         - auth
       summary: Authenticate a user and return JWT tokens
       operationId: loginUser
-      parameters:
-        - $ref: '#/components/parameters/TraceIdHeader'
       requestBody:
         required: true
         content:
@@ -66,8 +62,6 @@ paths:
         - auth
       summary: Refresh JWT access token
       operationId: refreshToken
-      parameters:
-        - $ref: '#/components/parameters/TraceIdHeader'
       requestBody:
         required: true
         content:
@@ -92,8 +86,6 @@ paths:
       operationId: logoutUser
       security:
         - bearerAuth: []
-      parameters:
-        - $ref: '#/components/parameters/TraceIdHeader'
       responses:
         '204':
           description: Successfully logged out
@@ -107,16 +99,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
-  parameters:
-    TraceIdHeader:
-      name: X-Trace-ID
-      in: header
-      required: true
-      description: Unique trace identifier used for request tracing across services
-      schema:
-        type: string
-        example: 7f9c2a3e-bb1a-4a77-8c33-2d9d8e9b5f1e
 
   responses:
     BadRequest:
