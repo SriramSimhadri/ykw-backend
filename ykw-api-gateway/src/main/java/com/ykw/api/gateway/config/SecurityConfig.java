@@ -22,15 +22,34 @@ public class SecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/api/auth/logout").authenticated()
+                        // Auth Service
                         .pathMatchers(
                                 "/api/auth/login",
                                 "/api/auth/register",
-                                "/api/auth/refresh")
-                        .permitAll()
+                                "/api/auth/refresh"
+                        ).permitAll()
+                        .pathMatchers("/api/auth/logout").authenticated()
+
+                        // Profile Service
                         .pathMatchers("/api/users/public/**").permitAll()
                         .pathMatchers("/api/users/**").authenticated()
+
+                        // Article Service
+                        .pathMatchers(org.springframework.http.HttpMethod.GET,
+                                "/api/articles",
+                                "/api/articles/*",
+                                "/api/tags"
+                        ).permitAll()
+                        .pathMatchers("/api/articles/feed").authenticated()
+                        .pathMatchers(org.springframework.http.HttpMethod.POST, "/api/articles").authenticated()
+                        .pathMatchers(org.springframework.http.HttpMethod.PUT, "/api/articles/*").authenticated()
+                        .pathMatchers(org.springframework.http.HttpMethod.DELETE, "/api/articles/*").authenticated()
+                        .pathMatchers("/api/articles/*/tags/**").authenticated()
+
+                        // Internal - Blocked
                         .pathMatchers("/internal/**").denyAll()
+
+                        // Default authenticated
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth -> oauth
