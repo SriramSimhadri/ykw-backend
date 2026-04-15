@@ -23,7 +23,7 @@
        - Provides paginated lists of followers and following users.
 
 - Architecture & Design
-  - Microservices-based: auth-service, profile-serivce, article, article-likes, article-comments, and follows services operate independently, each with its own database.
+  - Microservices-based: ykw-auth-service, ykw-profile-serivce, ykw-articles-service, ykw-article-likes, ykw-article-comments, and ykw-follows-service services operate independently, each with its own database.
   - Contract-first: Services communicate via REST APIs following contract
   - Eventual consistency: Counts like likes_count, comments_count, and followers_count can be updated asynchronously for scalability.
   - Scalable & Production-ready: Each service has indexes and constraints for performance and data integrity.

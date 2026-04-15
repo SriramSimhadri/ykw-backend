@@ -1,0 +1,36 @@
+<configuration>
+
+    <springProperty scope="context"
+                    name="serviceName"
+                    source="spring.application.name"/>
+
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"service":"${serviceName}","env":"${ENV:local}"}</customFields>
+            <includeMdc>true</includeMdc>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/${serviceName}.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${serviceName}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"service":"${serviceName}"}</customFields>
+        </encoder>
+    </appender>
+
+    <logger name="YKW_APP_LOGGER" level="INFO"/>
+    <logger name="com.ykw" level="DEBUG"/>
+
+    <root level="INFO">
+        <appender-ref ref="JSON"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

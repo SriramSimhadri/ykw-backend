@@ -3,6 +3,7 @@ package com.ykw.article.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 @Entity
 @Table(name = "article_tags")
 @Data
@@ -14,13 +15,9 @@ public class ArticleTag {
     @EmbeddedId
     private ArticleTagId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("articleId")
-    @JoinColumn(name = "article_id", nullable = false)
-    private Article article;
+    @Column(name = "article_id", nullable = false, insertable = false, updatable = false)
+    private Long articleId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("tagId")
-    @JoinColumn(name = "tag_id", nullable = false)
-    private Tag tag;
+    @Column(name = "tag_id", nullable = false, insertable = false, updatable = false)
+    private Long tagId;
 }

@@ -1,10 +1,7 @@
 package com.ykw.article.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -23,7 +20,7 @@ public class Article {
     @Column(name = "author_id", nullable = false)
     private Long authorId;
 
-    @Column(name = "slug", nullable = false)
+    @Column(name = "slug", nullable = false, unique = true, length = 160)
     private String slug;
 
     @Column(name = "title", nullable = false)
@@ -38,17 +35,9 @@ public class Article {
     @Column(name = "cover_image_url")
     private String coverImageUrl;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
-
-    @Column(name = "reading_time", nullable = false)
-    private Integer readingTime = 0;
-
-    @Column(name = "likes_count", nullable = false)
-    private Integer likesCount = 0;
-
-    @Column(name = "comments_count", nullable = false)
-    private Integer commentsCount = 0;
+    private ArticleStatus status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -64,9 +53,6 @@ public class Article {
         LocalDateTime now = LocalDateTime.now();
         if (createdAt == null) createdAt = now;
         if (updatedAt == null) updatedAt = now;
-        if (readingTime == null) readingTime = 0;
-        if (likesCount == null) likesCount = 0;
-        if (commentsCount == null) commentsCount = 0;
     }
 
     @PreUpdate
