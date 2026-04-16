@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 public class Article {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id", unique = true, nullable = false)
+    private String id;
 
     @Column(name = "author_id", nullable = false)
     private Long authorId;

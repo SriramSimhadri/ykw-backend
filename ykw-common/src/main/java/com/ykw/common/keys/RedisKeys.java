@@ -11,10 +11,10 @@ public final class RedisKeys {
     }
 
     public static String userRolesKey(String userId) {
-        return  USER_ROLE_KEY+ userId;
+        return  USER_ROLE_KEY + userId;
     }
 
-    public static String articleIdempotentKey(Long userId) {
-        return ARTICLE_IDEMPOTENCY_KEY + userId;
+    public static String articleIdempotentKey(Long userId, String header) {
+        return ARTICLE_IDEMPOTENCY_KEY + userId + ":" + header;
     }
 }

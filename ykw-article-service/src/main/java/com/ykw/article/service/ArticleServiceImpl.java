@@ -2,6 +2,8 @@ package com.ykw.article.service;
 
 import com.ykw.article.dto.ArticleResponse;
 import com.ykw.article.dto.CreateArticleRequest;
+import com.ykw.article.error.ResourceConflictException;
+import com.ykw.article.error.ResourceNotFoundException;
 import com.ykw.article.error.UnauthorizedException;
 import com.ykw.article.mapper.ArticleMapper;
 import com.ykw.article.model.Article;
@@ -13,7 +15,6 @@ import com.ykw.common.logging.LogUtil;
 import com.ykw.common.security.CurrentUserContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -34,20 +35,40 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     @Transactional
-    public ArticleResponse createArticle(String header, CreateArticleRequest request) {
+    public ArticleResponse createArticle(String idempotencyKey, CreateArticleRequest request) {
 
         Long userId = Optional.ofNullable(currentUserContext.getCurrentUser().userId())
-                .orElseThrow(() -> {
-                    LogUtil.error(LogEvent.create("USER_NOT_AUTHENTICATED"));
-                    return new UnauthorizedException("User not authenticated");
-                });
+                .orElseThrow(() -> new UnauthorizedException("User not authenticated"));
 
-        //cache the article
-        cacheService.cacheArticle(userId, header);
+        String value = cacheService.getValue(userId, idempotencyKey);
 
+        // Case 1: Already processed
+        if (value != null && !cacheService.isLock(value)) {
+            Article article = articleRepository.findById(value)
+                    .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+
+            return articleMapper.toResponse(article);
+        }
+
+        // Case 2: In progress -> request in progress
+        if (value != null && cacheService.isLock(value)) {
+            throw new ResourceConflictException("Article creation request in progress");
+        }
+
+        // Case 3: First request -> acquire lock
+        boolean acquired = cacheService.acquireLock(userId, idempotencyKey);
+
+        if (!acquired) {
+            // Someone else just acquired -> say request in progress
+            throw new ResourceConflictException("Article creation request in progress");
+        }
+
+        // process
         String slug = ArticleUtil.slugify(request.getTitle());
-
         Article saved = getSaved(request, userId, slug);
+
+        // replace LOCK with result
+        cacheService.saveResult(userId, idempotencyKey, saved.getId());
 
         return articleMapper.toResponse(saved);
     }
@@ -60,6 +81,7 @@ public class ArticleServiceImpl implements ArticleService {
         );
 
         Article article = Article.builder()
+                .id(ArticleUtil.articleId())
                 .title(request.getTitle())
                 .subtitle(request.getSubtitle())
                 .content(request.getContent())

@@ -14,4 +14,8 @@ public class ArticleUtil {
                 .trim()
                 .replaceAll("\\s+", "-");
     }
+
+    public static String articleId() {
+        return UniqueIdGenerator.generate();
+    }
 }

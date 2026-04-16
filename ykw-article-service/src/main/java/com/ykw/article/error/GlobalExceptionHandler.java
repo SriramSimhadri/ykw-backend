@@ -30,6 +30,18 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(ResourceConflictException.class)
+    public ResponseEntity<?> handleConflict(ResourceConflictException ex,
+                                            HttpServletRequest request) {
+        log.error("Resource found error", ex);
+        return buildError(
+                HttpStatus.CONFLICT,
+                "CONFLICT_ERROR",
+                ex.getMessage(),
+                request
+        );
+    }
+
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<?> handleUnauthorized(UnauthorizedException ex,
                                                 HttpServletRequest request) {

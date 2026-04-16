@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS articles;
 DROP TABLE IF EXISTS tags;
 
 CREATE TABLE articles (
-    id BIGSERIAL PRIMARY KEY,
+    id VARCHAR(150) PRIMARY KEY,
     author_id BIGINT NOT NULL,
     slug VARCHAR(160) NOT NULL,
     title VARCHAR(255) NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE tags (
 );
 
 CREATE TABLE article_tags (
-    article_id BIGINT NOT NULL,
+    article_id VARCHAR(150) NOT NULL,
     tag_id BIGINT NOT NULL,
     PRIMARY KEY (article_id, tag_id),
     FOREIGN KEY (article_id)
