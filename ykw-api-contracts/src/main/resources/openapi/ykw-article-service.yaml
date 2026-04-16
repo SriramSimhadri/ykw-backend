@@ -17,7 +17,6 @@ servers:
   - url: http://localhost:8092
 
 paths:
-
   /api/articles:
     post:
       tags:
@@ -25,7 +24,9 @@ paths:
       summary: Create a new article
       operationId: createArticle
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
       requestBody:
         required: true
         content:
@@ -271,6 +272,15 @@ paths:
                 $ref: '#/components/schemas/TagListResponse'
 
 components:
+
+  parameters:
+    IdempotencyKeyHeader:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Unique key to ensure idempotent request handling
+      schema:
+        type: string
 
   securitySchemes:
     bearerAuth:

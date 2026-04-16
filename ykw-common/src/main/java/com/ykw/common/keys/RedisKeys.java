@@ -1,7 +1,6 @@
 package com.ykw.common.keys;
 
-import static com.ykw.common.constants.RedisConstants.AUTH_BLACK_LIST_KEY;
-import static com.ykw.common.constants.RedisConstants.USER_ROLE_KEY;
+import static com.ykw.common.constants.RedisConstants.*;
 
 public final class RedisKeys {
 
@@ -13,5 +12,9 @@ public final class RedisKeys {
 
     public static String userRolesKey(String userId) {
         return  USER_ROLE_KEY+ userId;
+    }
+
+    public static String articleIdempotentKey(Long userId) {
+        return ARTICLE_IDEMPOTENCY_KEY + userId;
     }
 }

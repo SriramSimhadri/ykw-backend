@@ -20,4 +20,6 @@ public interface Constants {
 
     String ROLE_HEADER = "X-User-Roles";
 
+    String ARTICLE_SLUG = "article_slug";
+
 }
