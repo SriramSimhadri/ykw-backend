@@ -1,0 +1,12 @@
+resilience4j:
+  circuitbreaker:
+    instances:
+      db:
+        failure-rate-threshold: 50 # If 50% of last 10 calls fail, open circuit
+        sliding-window-size: 10
+        wait-duration-in-open-state: 10s # After 10s move to half-open
+      redis:
+        failure-rate-threshold: 50
+        sliding-window-size: 10
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
