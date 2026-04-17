@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class ArticleTagId implements Serializable {
 
     @Column(name = "article_id", nullable = false)
-    private Long articleId;
+    private String articleId;
 
     @Column(name = "tag_id", nullable = false)
     private Long tagId;

@@ -7,4 +7,6 @@ public interface ArticleService {
 
     ArticleResponse createArticle(String header, CreateArticleRequest request);
 
+    void deleteArticle(String slug);
+
 }

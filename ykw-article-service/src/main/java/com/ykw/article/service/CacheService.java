@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -17,14 +18,14 @@ public class CacheService {
     private static final String LOCK = "LOCK";
 
     @CircuitBreaker(name = "redis", fallbackMethod = "getValueFallback")
-    public String getValue(Long userId, String idempotencyKey) {
-        String key = RedisKeys.articleIdempotentKey(userId, idempotencyKey);
+    public String getValue(Long authorId, String idempotencyKey) {
+        String key = RedisKeys.articleIdempotencyKey(authorId, idempotencyKey);
         return redisTemplate.opsForValue().get(key);
     }
 
     @CircuitBreaker(name = "redis", fallbackMethod = "acquireLockFallback")
-    public boolean acquireLock(Long userId, String idempotencyKey) {
-        String key = RedisKeys.articleIdempotentKey(userId, idempotencyKey);
+    public boolean acquireLock(Long authorId, String idempotencyKey) {
+        String key = RedisKeys.articleIdempotencyKey(authorId, idempotencyKey);
 
         Boolean success = redisTemplate.opsForValue()
                 .setIfAbsent(key, LOCK, 10, TimeUnit.SECONDS);
@@ -32,26 +33,39 @@ public class CacheService {
         return Boolean.TRUE.equals(success);
     }
 
-    @CircuitBreaker(name = "redis", fallbackMethod = "saveResultFallback")
-    public void saveResult(Long userId, String idempotencyKey, String articleId) {
-        String key = RedisKeys.articleIdempotentKey(userId, idempotencyKey);
+    @CircuitBreaker(name = "redis", fallbackMethod = "saveArticleFallback")
+    public void saveArticleMetadata(Long authorId,
+                            String slug) {
+        String articleSlugKey = RedisKeys.articleMetadata(authorId);
+        redisTemplate.opsForZSet().add(articleSlugKey, slug, System.currentTimeMillis());
+    }
 
-        redisTemplate.opsForValue()
-                .set(key, articleId, 15, TimeUnit.MINUTES);
+    public Set<String> getArticles(Long authorId) {
+        String key = RedisKeys.articleMetadata(authorId);
+        return redisTemplate.opsForSet().members(key);
+    }
+
+    @CircuitBreaker(name = "redis", fallbackMethod = "evictFallback")
+    public void evictArticle(Long authorId, String slug) {
+        String key = RedisKeys.articleMetadata(authorId);
+        redisTemplate.opsForSet().remove(key, slug);
     }
 
     public boolean isLock(String value) {
         return LOCK.equals(value);
     }
 
-    public String getValueFallback(Long userId, String idempotencyKey, Exception ex) {
+    public String getValueFallback(Long authorId, String idempotencyKey, Exception ex) {
         return null;
     }
 
-    public boolean acquireLockFallback(Long userId, String idempotencyKey, Exception ex) {
-        return true;
+    public boolean acquireLockFallback(Long authorId, String idempotencyKey, Exception ex) {
+        return false;
     }
 
-    public void saveResultFallback(Long userId, String idempotencyKey, String articleId, Exception ex) {
+    public void saveArticleFallback(Long authorId, String idempotencyKey, String articleId, Exception ex) {
+    }
+
+    public void evictFallback(String slug, Exception ex) {
     }
 }

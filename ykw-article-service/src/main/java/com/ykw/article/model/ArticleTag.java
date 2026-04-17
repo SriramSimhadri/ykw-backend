@@ -16,7 +16,7 @@ public class ArticleTag {
     private ArticleTagId id;
 
     @Column(name = "article_id", nullable = false, insertable = false, updatable = false)
-    private Long articleId;
+    private String articleId;
 
     @Column(name = "tag_id", nullable = false, insertable = false, updatable = false)
     private Long tagId;

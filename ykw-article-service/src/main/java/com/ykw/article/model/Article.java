@@ -21,10 +21,10 @@ public class Article {
     @Column(name = "author_id", nullable = false)
     private Long authorId;
 
-    @Column(name = "slug", nullable = false, unique = true, length = 160)
+    @Column(name = "slug", nullable = false, unique = true, length = 200)
     private String slug;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title", nullable = false, length = 150)
     private String title;
 
     @Column(name = "subtitle", length = 500)

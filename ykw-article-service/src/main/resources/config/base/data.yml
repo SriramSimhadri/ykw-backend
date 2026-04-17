@@ -6,6 +6,13 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
+    hikari:
+      maximum-pool-size: 20 # Max db concurrent connections
+      minimum-idle: 5 # keep 5 ready connections
+      connection-timeout: 3000 # wait max 3 seconds
+      idle-timeout: 600000 # close idle connections
+      max-lifetime: 1800000 # kill long-lived connections
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -24,6 +31,7 @@ spring:
       timeout: 2000
       lettuce:
         pool:
-          max-active: 10
-          max-idle: 5
-          min-idle: 1
+          max-active: 20
+          max-idle: 10
+          min-idle: 2
+          timeout: 2000

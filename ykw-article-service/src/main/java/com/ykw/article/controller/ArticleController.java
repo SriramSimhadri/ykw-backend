@@ -29,6 +29,17 @@ public class ArticleController implements ArticlesApi {
         return ResponseEntity
                 .created(URI.create("api/articles/" + articleResponse.getSlug()))
                 .body(articleResponse);
+    }
 
+    public ResponseEntity<Void> deleteArticle(String slug) {
+
+        LogUtil.info(LogEvent.create("ARTICLE_DELETION_REQUEST_RECEIVED"));
+
+        articleService.deleteArticle(slug);
+
+        LogUtil.info(LogEvent.create("ARTICLE_DELETION_REQUEST_COMPLETED"));
+
+        return ResponseEntity.noContent()
+                .build();
     }
 }

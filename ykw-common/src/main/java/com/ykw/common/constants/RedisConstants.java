@@ -6,5 +6,7 @@ public interface RedisConstants {
 
     String USER_ROLE_KEY = "user:role:";
 
-    String ARTICLE_IDEMPOTENCY_KEY = "article:idempotency:";
+    String ARTICLE_IDEMPOTENCY = "article:idempotency:";
+
+    String ARTICLE_METADATA = "article:metadata:";
 }

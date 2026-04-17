@@ -419,7 +419,7 @@ components:
 
     ArticleStatus:
       type: string
-      enum: [DRAFT, PUBLISHED]
+      enum: [DRAFT, PUBLISHED, DELETED]
 
     ErrorResponse:
       type: object
