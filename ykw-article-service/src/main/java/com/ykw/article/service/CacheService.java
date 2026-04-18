@@ -28,12 +28,19 @@ public class CacheService {
         String key = RedisKeys.articleIdempotencyKey(authorId, idempotencyKey);
 
         Boolean success = redisTemplate.opsForValue()
-                .setIfAbsent(key, LOCK, 10, TimeUnit.SECONDS);
+                .setIfAbsent(key, LOCK, 1, TimeUnit.MINUTES);
 
         return Boolean.TRUE.equals(success);
     }
 
-    @CircuitBreaker(name = "redis", fallbackMethod = "saveArticleFallback")
+    @CircuitBreaker(name = "redis", fallbackMethod = "saveIdempotencyFallback")
+    public void saveIdempotency(Long authorId, String idempotencyKey, String articleId) {
+        String key = RedisKeys.articleIdempotencyKey(authorId, idempotencyKey);
+        redisTemplate.opsForValue()
+                .set(key, articleId, 1, TimeUnit.MINUTES);
+    }
+
+    @CircuitBreaker(name = "redis", fallbackMethod = "saveArticleMetadataFallback")
     public void saveArticleMetadata(Long authorId,
                             String slug) {
         String articleSlugKey = RedisKeys.articleMetadata(authorId);
@@ -42,13 +49,13 @@ public class CacheService {
 
     public Set<String> getArticles(Long authorId) {
         String key = RedisKeys.articleMetadata(authorId);
-        return redisTemplate.opsForSet().members(key);
+        return redisTemplate.opsForZSet().range(key, 0, -1);
     }
 
     @CircuitBreaker(name = "redis", fallbackMethod = "evictFallback")
     public void evictArticle(Long authorId, String slug) {
         String key = RedisKeys.articleMetadata(authorId);
-        redisTemplate.opsForSet().remove(key, slug);
+        redisTemplate.opsForZSet().remove(key, slug);
     }
 
     public boolean isLock(String value) {
@@ -63,9 +70,13 @@ public class CacheService {
         return false;
     }
 
-    public void saveArticleFallback(Long authorId, String idempotencyKey, String articleId, Exception ex) {
+    public void saveIdempotencyFallback(Long authorId, String idempotencyKey, String articleId, Exception ex) {
     }
 
-    public void evictFallback(String slug, Exception ex) {
+    public void saveArticleMetadataFallback(Long authorId, String slug, Exception ex) {
+    }
+
+
+    public void evictFallback(Long authorId, String slug, Exception ex) {
     }
 }

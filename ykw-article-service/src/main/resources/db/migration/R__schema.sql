@@ -37,6 +37,16 @@ CREATE TABLE article_tags (
         ON DELETE CASCADE
 );
 
+CREATE TABLE article_idempotency (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    author_id BIGINT,
+    idempotency_key VARCHAR(255),
+    article_id VARCHAR(255),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('IN_PROGRESS', 'COMPLETED')),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(author_id, idempotency_key)
+);
+
 -- Index for global feed
 CREATE INDEX idx_articles_published
 ON articles (published_at DESC)

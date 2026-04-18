@@ -127,6 +127,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
         - name: slug
           in: path
           required: true
@@ -325,6 +326,9 @@ components:
     UpdateArticleRequest:
       type: object
       properties:
+        articleId:
+          type: string
+          maxLength: 255
         title:
           type: string
           maxLength: 255

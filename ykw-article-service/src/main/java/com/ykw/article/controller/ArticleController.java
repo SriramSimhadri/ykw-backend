@@ -3,6 +3,7 @@ package com.ykw.article.controller;
 import com.ykw.article.api.ArticlesApi;
 import com.ykw.article.dto.ArticleResponse;
 import com.ykw.article.dto.CreateArticleRequest;
+import com.ykw.article.dto.UpdateArticleRequest;
 import com.ykw.article.service.ArticleService;
 import com.ykw.common.logging.LogEvent;
 import com.ykw.common.logging.LogUtil;
@@ -42,4 +43,20 @@ public class ArticleController implements ArticlesApi {
         return ResponseEntity.noContent()
                 .build();
     }
+
+    public ResponseEntity<ArticleResponse> updateArticle(String header, String slug, UpdateArticleRequest updateArticleRequest) {
+
+        LogUtil.info(LogEvent.create("ARTICLE_UPDATE_REQUEST_RECEIVED"));
+
+        ArticleResponse updated = articleService.updateArticle(header, slug, updateArticleRequest);
+
+        LogUtil.info(LogEvent.create("ARTICLE_UPDATE_REQUEST_COMPLETED"));
+
+        return ResponseEntity
+                .created(URI.create("/api/articles/" + updated.getSlug()))
+                .body(updated);
+
+    }
+
+
 }

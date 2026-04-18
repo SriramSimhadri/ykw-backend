@@ -2,6 +2,7 @@ package com.ykw.article.service;
 
 import com.ykw.article.dto.ArticleResponse;
 import com.ykw.article.dto.CreateArticleRequest;
+import com.ykw.article.dto.UpdateArticleRequest;
 
 public interface ArticleService {
 
@@ -9,4 +10,5 @@ public interface ArticleService {
 
     void deleteArticle(String slug);
 
+    ArticleResponse updateArticle(String header, String slug, UpdateArticleRequest updateArticleRequest);
 }
