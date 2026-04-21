@@ -23,6 +23,4 @@ public interface ArticleRepository extends JpaRepository<Article, String> {
             String slug,
             ArticleStatus status
     );
-
-    Optional<Article> findById(String id);
 }

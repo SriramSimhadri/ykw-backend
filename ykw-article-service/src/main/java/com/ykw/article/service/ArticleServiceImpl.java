@@ -7,7 +7,10 @@ import com.ykw.article.error.ResourceConflictException;
 import com.ykw.article.error.ResourceNotFoundException;
 import com.ykw.article.error.UnauthorizedException;
 import com.ykw.article.mapper.ArticleMapper;
-import com.ykw.article.model.*;
+import com.ykw.article.model.Article;
+import com.ykw.article.model.ArticleIdempotency;
+import com.ykw.article.model.ArticleStatus;
+import com.ykw.article.model.CreationStatus;
 import com.ykw.article.repository.ArticleIdempotencyRepository;
 import com.ykw.article.repository.ArticleRepository;
 import com.ykw.article.util.ArticleUtil;
@@ -17,8 +20,10 @@ import com.ykw.common.security.CurrentUserContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -227,5 +232,16 @@ public class ArticleServiceImpl implements ArticleService {
                 .coverImageUrl(request.getCoverImageUrl())
                 .slug(slug)
                 .build();
+    }
+
+
+    @Scheduled(fixedDelay = 60 * 60 * 1000) //every one hour
+    @Transactional
+    public void cleanupIdempotency() {
+        Instant cutoffCompleted = Instant.now().minus(Duration.ofHours(1));
+        Instant cutoffInProgress = Instant.now().minus(Duration.ofHours(10));
+        int deleted = idempotencyRepository.cleanup(cutoffCompleted, cutoffInProgress);
+        LogUtil.info(LogEvent.create("IDEMPOTENCY_CLEANUP")
+                .add("deleted_count", deleted));
     }
 }
