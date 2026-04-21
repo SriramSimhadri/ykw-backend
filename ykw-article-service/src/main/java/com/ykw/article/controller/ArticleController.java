@@ -57,6 +57,4 @@ public class ArticleController implements ArticlesApi {
                 .body(updated);
 
     }
-
-
 }

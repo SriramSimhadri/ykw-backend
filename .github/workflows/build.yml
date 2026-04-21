@@ -19,6 +19,7 @@ jobs:
           - ykw-api-gateway
           - ykw-auth-service
           - ykw-profile-service
+          - ykw-article-service
 
     steps:
       - name: Checkout code
