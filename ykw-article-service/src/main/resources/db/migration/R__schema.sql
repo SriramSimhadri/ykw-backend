@@ -47,6 +47,18 @@ CREATE TABLE article_idempotency (
     UNIQUE(author_id, idempotency_key)
 );
 
+CREATE TABLE outbox_event (
+    id BIGINT PRIMARY KEY,
+    event_id VARCHAR(50) NOT NULL UNIQUE,
+    aggregate_id VARCHAR(50) NOT NULL,
+    event_type VARCHAR(50) NOT NULL,
+    payload JSONB NOT NULL,
+    status VARCHAR(20) NOT NULL CHECK (status IN ('NEW', 'SENT', 'FAILED')),
+    retries INT DEFAULT 0,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
+);
+
 -- Index for global feed
 CREATE INDEX idx_articles_published
 ON articles (published_at DESC)

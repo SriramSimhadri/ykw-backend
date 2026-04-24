@@ -7,13 +7,11 @@ import com.ykw.article.error.ResourceConflictException;
 import com.ykw.article.error.ResourceNotFoundException;
 import com.ykw.article.error.UnauthorizedException;
 import com.ykw.article.mapper.ArticleMapper;
-import com.ykw.article.model.Article;
-import com.ykw.article.model.ArticleIdempotency;
-import com.ykw.article.model.ArticleStatus;
-import com.ykw.article.model.CreationStatus;
+import com.ykw.article.model.*;
 import com.ykw.article.repository.ArticleIdempotencyRepository;
 import com.ykw.article.repository.ArticleRepository;
 import com.ykw.article.util.ArticleUtil;
+import com.ykw.common.events.EventType;
 import com.ykw.common.logging.LogEvent;
 import com.ykw.common.logging.LogUtil;
 import com.ykw.common.security.CurrentUserContext;
@@ -27,19 +25,18 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
+import static com.ykw.common.constants.Constants.*;
+
 @Service
 @RequiredArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
 
-    private static final String ARTICLE_ID = "article_id";
-    private static final String ARTICLE_SLUG = "article_slug";
-    private static final String CREATED_AT = "created_at";
-    private static final String UPDATED_AT = "updated_at";
 
     private final CurrentUserContext currentUserContext;
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
     private final ArticleIdempotencyRepository idempotencyRepository;
+    private final OutboxService outboxService;
 
     @Override
     @Transactional
@@ -99,7 +96,7 @@ public class ArticleServiceImpl implements ArticleService {
         idempotency.setArticleId(saved.getId());
         idempotencyRepository.save(idempotency);
 
-        // TODO: Outbox event
+        outboxService.saveOutboxEvent(saved, EventType.ARTICLE_CREATED, OutboxEventStatus.NEW);
 
         LogUtil.info(LogEvent.create("ARTICLE_CREATION_COMPLETED")
                 .add(ARTICLE_ID, saved.getId())
@@ -176,7 +173,9 @@ public class ArticleServiceImpl implements ArticleService {
         idempotency.setArticleId(article.getId());
         idempotencyRepository.save(idempotency);
 
-        // TODO: Outbox event
+        //publish event to kafka
+        outboxService.saveOutboxEvent(article, EventType.ARTICLE_UPDATED, OutboxEventStatus.NEW);
+
 
         LogUtil.info(LogEvent.create("ARTICLE_UPDATE_COMPLETED")
                 .add(ARTICLE_ID, article.getId())
@@ -196,18 +195,21 @@ public class ArticleServiceImpl implements ArticleService {
                 .add(ARTICLE_SLUG, slug)
                 .userId(authorId));
 
-        long deleted = articleRepository.softDeleteBySlugAndAuthorId(slug, authorId);
+        Article article = articleRepository
+                .findByAuthorIdAndSlugAndStatusNot(authorId, slug, ArticleStatus.DELETED)
+                .orElseThrow(() -> {
+                    LogUtil.error(LogEvent.create("ARTICLE_DELETED_NOT_FOUND")
+                            .add(ARTICLE_SLUG, slug)
+                            .userId(authorId));
+                    return new ResourceNotFoundException("Article not found");
+                });
 
-        if (deleted == 0) {
-            LogUtil.info(LogEvent.create("ARTICLE_DELETED_OR_NOT_FOUND")
-                    .add(ARTICLE_SLUG, slug)
-                    .userId(authorId));
-            return;
-        }
+        article.setStatus(ArticleStatus.DELETED);
 
-        // TODO: Outbox event
+        //publish event to kafka
+        outboxService.saveOutboxEvent(article, EventType.ARTICLE_DELETED, OutboxEventStatus.NEW);
 
-        LogUtil.info(LogEvent.create("ARTICLE_DELETION_SUCCESS")
+        LogUtil.info(LogEvent.create("ARTICLE_MARKED_AS_DELETED")
                 .add(ARTICLE_SLUG, slug)
                 .userId(authorId));
     }
@@ -233,7 +235,6 @@ public class ArticleServiceImpl implements ArticleService {
                 .slug(slug)
                 .build();
     }
-
 
     @Scheduled(fixedDelay = 60 * 60 * 1000) //every one hour
     @Transactional

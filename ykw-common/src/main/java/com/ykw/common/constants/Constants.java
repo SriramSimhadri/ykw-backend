@@ -22,4 +22,12 @@ public interface Constants {
 
     String ARTICLE_SLUG = "article_slug";
 
+    String ARTICLE_ID = "article_id";
+
+    String CREATED_AT = "created_at";
+
+    String UPDATED_AT = "updated_at";
+
+    String ARTICLE_EVENTS_TOPIC = "article-events";
+
 }
