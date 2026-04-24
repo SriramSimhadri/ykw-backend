@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import static com.ykw.common.constants.Constants.*;
@@ -94,5 +95,27 @@ public class OutboxServiceImpl implements OutboxService {
                 .authorId(article.getAuthorId())
                 .title(article.getTitle())
                 .build();
+    }
+
+    @Transactional
+    public List<OutboxEvent> fetchAndMarkProcessing(int limit) {
+        List<OutboxEvent> events = repository.fetchBatchForUpdate(limit);
+
+        events.forEach(e -> {
+            e.setStatus(OutboxEventStatus.PROCESSING);
+            e.setUpdatedAt(Instant.now());
+        });
+
+        return events;
+    }
+
+    @Transactional
+    public void markSent(OutboxEvent event) {
+        repository.updateStatus(event.getId(), OutboxEventStatus.SENT, Instant.now(), event.getRetries());
+    }
+
+    @Transactional
+    public void markFailed(OutboxEvent event) {
+        repository.updateStatus(event.getId(), OutboxEventStatus.FAILED, Instant.now(), event.getRetries() + 1);
     }
 }
