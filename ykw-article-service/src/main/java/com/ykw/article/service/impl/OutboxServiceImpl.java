@@ -5,11 +5,11 @@ import com.ykw.article.model.article.Article;
 import com.ykw.article.model.outbox.OutboxEvent;
 import com.ykw.article.model.outbox.OutboxEventStatus;
 import com.ykw.article.model.outbox.OutboxEventType;
-import com.ykw.article.payload.ArticleEventPayload;
 import com.ykw.article.repository.OutboxRepository;
 import com.ykw.article.service.OutboxService;
 import com.ykw.common.logging.LogEvent;
 import com.ykw.common.logging.LogUtil;
+import com.ykw.common.payload.ArticleEvent;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +43,7 @@ public class OutboxServiceImpl implements OutboxService {
                             .add(OUTBOX_EVENT_STATUS, status.name())
                     .userId(article.getAuthorId()));
 
-            ArticleEventPayload payload = buildPayload(article);
+            ArticleEvent payload = buildPayload(article);
 
             repository.save(
                     OutboxEvent.builder()
@@ -80,13 +80,19 @@ public class OutboxServiceImpl implements OutboxService {
         }
     }
 
-    private ArticleEventPayload buildPayload(Article article) {
-        return ArticleEventPayload.builder()
-                .articleId(article.getId())
+    private ArticleEvent buildPayload(Article article) {
+        return ArticleEvent.builder()
+                .id(article.getId())
+                .authorId(article.getAuthorId())
+                .status(article.getStatus().name())
+                .content(article.getContent())
+                .coverImageUrl(article.getCoverImageUrl())
+                .subtitle(article.getSubtitle())
+                .publishedAt(article.getPublishedAt())
+                .createdAt(article.getCreatedAt())
                 .slug(article.getSlug())
                 .authorId(article.getAuthorId())
                 .title(article.getTitle())
-                .status(article.getStatus().name())
                 .build();
     }
 }
