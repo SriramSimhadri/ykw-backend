@@ -20,6 +20,7 @@ jobs:
           - ykw-auth-service
           - ykw-profile-service
           - ykw-article-service
+          - ykw-cache-service
 
     steps:
       - name: Checkout code
