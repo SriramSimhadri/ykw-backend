@@ -1,4 +1,4 @@
-package com.ykw.article.service;
+package com.ykw.article.service.impl;
 
 import com.ykw.article.dto.ArticleResponse;
 import com.ykw.article.dto.CreateArticleRequest;
@@ -7,11 +7,17 @@ import com.ykw.article.error.ResourceConflictException;
 import com.ykw.article.error.ResourceNotFoundException;
 import com.ykw.article.error.UnauthorizedException;
 import com.ykw.article.mapper.ArticleMapper;
-import com.ykw.article.model.*;
+import com.ykw.article.model.article.Article;
+import com.ykw.article.model.article.ArticleStatus;
+import com.ykw.article.model.idempotency.ArticleIdempotency;
+import com.ykw.article.model.idempotency.CreationStatus;
+import com.ykw.article.model.outbox.OutboxEventStatus;
+import com.ykw.article.model.outbox.OutboxEventType;
 import com.ykw.article.repository.ArticleIdempotencyRepository;
 import com.ykw.article.repository.ArticleRepository;
+import com.ykw.article.service.ArticleService;
+import com.ykw.article.service.OutboxService;
 import com.ykw.article.util.ArticleUtil;
-import com.ykw.common.events.EventType;
 import com.ykw.common.logging.LogEvent;
 import com.ykw.common.logging.LogUtil;
 import com.ykw.common.security.CurrentUserContext;
@@ -31,7 +37,6 @@ import static com.ykw.common.constants.Constants.*;
 @RequiredArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
 
-
     private final CurrentUserContext currentUserContext;
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
@@ -44,17 +49,19 @@ public class ArticleServiceImpl implements ArticleService {
 
         Long authorId = getCurrentUserId();
 
-        LogUtil.info(LogEvent.create("ARTICLE_CREATION_INITIATED")
-                .add(ARTICLE_SLUG, request.getTitle())
-                .userId(authorId));
 
         String slug = ArticleUtil.slugify(request.getTitle());
         String articleId = ArticleUtil.articleId();
 
-        ArticleIdempotency idempotency;
+        LogUtil.info(LogEvent.create("ARTICLE_CREATION_INITIATED")
+                .add(ARTICLE_SLUG, slug)
+                .add(ARTICLE_ID, articleId)
+                .userId(authorId));
+
+        ArticleIdempotency articleCreation;
 
         try {
-            idempotency = idempotencyRepository.save(
+            articleCreation = idempotencyRepository.save(
                     ArticleIdempotency.builder()
                             .authorId(authorId)
                             .idempotencyKey(idempotencyKey)
@@ -64,21 +71,23 @@ public class ArticleServiceImpl implements ArticleService {
             );
         } catch (DataIntegrityViolationException ex) {
             // data integrity failed by the author_id and idempotency key
-            idempotency = idempotencyRepository
+            articleCreation = idempotencyRepository
                     .findByAuthorIdAndIdempotencyKey(authorId, idempotencyKey)
                     .orElseThrow(() -> new ResourceNotFoundException("Idempotency record missing"));
 
-            if (idempotency.isInProgress()) {
+            if (articleCreation.isInProgress()) {
                 LogUtil.warn(LogEvent.create("ARTICLE_CREATION_IN_PROGRESS")
                         .add(ARTICLE_SLUG, slug)
+                        .add(ARTICLE_ID, articleId)
                         .userId(authorId));
                 throw new ResourceConflictException("Article creation in progress");
             }
 
-            if (idempotency.isCompleted()) {
-                Article existing = articleRepository.findById(idempotency.getArticleId())
+            if (articleCreation.isCompleted()) {
+                Article existing = articleRepository.findById(articleCreation.getArticleId())
                         .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
                 LogUtil.info(LogEvent.create("ARTICLE_ALREADY_CREATED")
+                        .add(ARTICLE_SLUG, existing.getSlug())
                         .add(ARTICLE_ID, existing.getId())
                         .add(CREATED_AT, existing.getCreatedAt())
                         .userId(authorId));
@@ -91,18 +100,20 @@ public class ArticleServiceImpl implements ArticleService {
         // Create article
         Article saved = articleRepository.save(buildArticle(request, authorId, slug, articleId));
 
-        // Update idempotency
-        idempotency.setCreationStatus(CreationStatus.COMPLETED);
-        idempotency.setArticleId(saved.getId());
-        idempotencyRepository.save(idempotency);
-
-        outboxService.saveOutboxEvent(saved, EventType.ARTICLE_CREATED, OutboxEventStatus.NEW);
+        // Update idempotency, to maintain duplicate article creation
+        articleCreation.setCreationStatus(CreationStatus.COMPLETED);
+        articleCreation.setArticleId(saved.getId());
+        idempotencyRepository.save(articleCreation);
 
         LogUtil.info(LogEvent.create("ARTICLE_CREATION_COMPLETED")
                 .add(ARTICLE_ID, saved.getId())
                 .add(ARTICLE_SLUG, saved.getSlug())
                 .add(CREATED_AT, saved.getCreatedAt())
                 .userId(authorId));
+
+        // outbox service will save the created record to the
+        // database which will be later processed by the scheduler to send it to kafka
+        outboxService.saveOutboxEvent(saved, OutboxEventType.ARTICLE_CREATED, OutboxEventStatus.NEW);
 
         return articleMapper.toResponse(saved);
     }
@@ -118,9 +129,9 @@ public class ArticleServiceImpl implements ArticleService {
                 .add(ARTICLE_ID, request.getArticleId())
                 .userId(authorId));
 
-        ArticleIdempotency idempotency;
+        ArticleIdempotency articleUpdate;
         try {
-            idempotency = idempotencyRepository.save(
+            articleUpdate = idempotencyRepository.save(
                     ArticleIdempotency.builder()
                             .authorId(authorId)
                             .idempotencyKey(idempotencyKey)
@@ -130,21 +141,23 @@ public class ArticleServiceImpl implements ArticleService {
             );
         } catch (DataIntegrityViolationException ex) {
             // data integrity failed by the author_id and idempotency key
-            idempotency = idempotencyRepository
+            articleUpdate = idempotencyRepository
                     .findByAuthorIdAndIdempotencyKey(authorId, idempotencyKey)
                     .orElseThrow(() -> new IllegalStateException("Idempotency record missing"));
 
-            if (idempotency.isInProgress()) {
+            if (articleUpdate.isInProgress()) {
                 LogUtil.warn(LogEvent.create("ARTICLE_UPDATE_IN_PROGRESS")
                         .add(ARTICLE_SLUG, slug)
+                        .add(ARTICLE_ID, request.getArticleId())
                         .userId(authorId));
                 throw new ResourceConflictException("Article update in progress");
             }
 
-            if (idempotency.isCompleted()) {
-                Article existing = articleRepository.findById(idempotency.getArticleId())
+            if (articleUpdate.isCompleted()) {
+                Article existing = articleRepository.findById(articleUpdate.getArticleId())
                         .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
                 LogUtil.info(LogEvent.create("ARTICLE_ALREADY_UPDATED")
+                        .add(ARTICLE_SLUG, existing.getId())
                         .add(ARTICLE_ID, existing.getId())
                         .add(UPDATED_AT, existing.getUpdatedAt())
                         .userId(authorId));
@@ -169,18 +182,18 @@ public class ArticleServiceImpl implements ArticleService {
         article.setSubtitle(request.getSubtitle());
         article.setCoverImageUrl(request.getCoverImageUrl());
 
-        idempotency.setCreationStatus(CreationStatus.COMPLETED);
-        idempotency.setArticleId(article.getId());
-        idempotencyRepository.save(idempotency);
+        articleUpdate.setCreationStatus(CreationStatus.COMPLETED);
+        articleUpdate.setArticleId(article.getId());
+        idempotencyRepository.save(articleUpdate);
 
-        //publish event to kafka
-        outboxService.saveOutboxEvent(article, EventType.ARTICLE_UPDATED, OutboxEventStatus.NEW);
+        outboxService.saveOutboxEvent(article, OutboxEventType.ARTICLE_UPDATED, OutboxEventStatus.NEW);
 
 
         LogUtil.info(LogEvent.create("ARTICLE_UPDATE_COMPLETED")
+                .add(ARTICLE_SLUG, article.getSlug())
                 .add(ARTICLE_ID, article.getId())
                 .add(UPDATED_AT, article.getUpdatedAt())
-                .userId(authorId));
+                .userId(article.getAuthorId()));
 
         return articleMapper.toResponse(article);
     }
@@ -206,8 +219,8 @@ public class ArticleServiceImpl implements ArticleService {
 
         article.setStatus(ArticleStatus.DELETED);
 
-        //publish event to kafka
-        outboxService.saveOutboxEvent(article, EventType.ARTICLE_DELETED, OutboxEventStatus.NEW);
+        //save the deleted article to outbox event
+        outboxService.saveOutboxEvent(article, OutboxEventType.ARTICLE_DELETED, OutboxEventStatus.NEW);
 
         LogUtil.info(LogEvent.create("ARTICLE_MARKED_AS_DELETED")
                 .add(ARTICLE_SLUG, slug)
@@ -241,8 +254,8 @@ public class ArticleServiceImpl implements ArticleService {
     public void cleanupIdempotency() {
         Instant cutoffCompleted = Instant.now().minus(Duration.ofHours(1));
         Instant cutoffInProgress = Instant.now().minus(Duration.ofHours(10));
-        int deleted = idempotencyRepository.cleanup(cutoffCompleted, cutoffInProgress);
+        int deleted = idempotencyRepository.deleteOldRecords(cutoffCompleted, cutoffInProgress);
         LogUtil.info(LogEvent.create("IDEMPOTENCY_CLEANUP")
-                .add("deleted_count", deleted));
+                .add(ARTICLE_IDEMPOTENCY_DELETED_COUNT, deleted));
     }
 }

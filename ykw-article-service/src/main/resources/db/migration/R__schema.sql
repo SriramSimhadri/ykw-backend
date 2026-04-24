@@ -51,13 +51,17 @@ CREATE TABLE outbox_event (
     id BIGINT PRIMARY KEY,
     event_id VARCHAR(50) NOT NULL UNIQUE,
     aggregate_id VARCHAR(50) NOT NULL,
-    event_type VARCHAR(50) NOT NULL,
+    event_type VARCHAR(50) NOT NULL CHECK (status IN ('ARTICLE_CREATED', 'ARTICLE_UPDATED', 'ARTICLE_DELETED')),
     payload JSONB NOT NULL,
     status VARCHAR(20) NOT NULL CHECK (status IN ('NEW', 'SENT', 'FAILED')),
     retries INT DEFAULT 0,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
+
+-- Index for outbox event selection during processing
+CREATE INDEX idx_outbox_status_created
+ON outbox_event(status, created_at);
 
 -- Index for global feed
 CREATE INDEX idx_articles_published

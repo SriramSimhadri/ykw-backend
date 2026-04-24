@@ -1,4 +1,4 @@
-package com.ykw.article.events;
+package com.ykw.article.payload;
 
 import lombok.Builder;
 import lombok.Data;

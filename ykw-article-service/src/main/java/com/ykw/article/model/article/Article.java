@@ -1,10 +1,9 @@
-package com.ykw.article.model;
+package com.ykw.article.model.article;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "articles")

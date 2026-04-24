@@ -1,7 +1,7 @@
 package com.ykw.article.mapper;
 
 import com.ykw.article.dto.ArticleResponse;
-import com.ykw.article.model.Article;
+import com.ykw.article.model.article.Article;
 import org.mapstruct.Mapper;
 
 import java.time.Instant;

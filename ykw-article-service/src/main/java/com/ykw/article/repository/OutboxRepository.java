@@ -1,9 +1,12 @@
 package com.ykw.article.repository;
 
-import com.ykw.article.model.OutboxEvent;
+import com.ykw.article.model.outbox.OutboxEvent;
+import com.ykw.article.model.outbox.OutboxEventStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.Instant;
 import java.util.List;
 
 public interface OutboxRepository extends JpaRepository<OutboxEvent, Long> {
@@ -25,4 +28,15 @@ public interface OutboxRepository extends JpaRepository<OutboxEvent, Long> {
                 FOR UPDATE SKIP LOCKED
             """, nativeQuery = true)
     List<OutboxEvent> fetchBatchForUpdate(int limit);
+
+
+    @Modifying(clearAutomatically = true)
+    @Query("""
+            UPDATE OutboxEvent oe
+            SET oe.status = :status,
+                oe.updatedAt = :updatedAt,
+                oe.retries = :retries
+            WHERE oe.id = :id
+    """)
+    void updateStatus(Long id, OutboxEventStatus status, Instant updatedAt, int retries);
 }

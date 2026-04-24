@@ -1,4 +1,4 @@
-package com.ykw.article.model;
+package com.ykw.article.model.idempotency;
 
 import jakarta.persistence.*;
 import lombok.*;

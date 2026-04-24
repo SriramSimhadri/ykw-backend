@@ -1,4 +1,4 @@
-package com.ykw.article.model;
+package com.ykw.article.model.article;
 
 import jakarta.persistence.*;
 import lombok.*;

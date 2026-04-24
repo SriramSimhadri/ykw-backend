@@ -1,4 +1,4 @@
-package com.ykw.article.model;
+package com.ykw.article.model.outbox;
 
 public enum OutboxEventStatus {
     NEW,

@@ -1,4 +1,4 @@
-package com.ykw.article.model;
+package com.ykw.article.model.article;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

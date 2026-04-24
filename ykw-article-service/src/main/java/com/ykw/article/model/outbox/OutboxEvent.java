@@ -1,4 +1,4 @@
-package com.ykw.article.model;
+package com.ykw.article.model.outbox;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,8 +24,9 @@ public class OutboxEvent {
     @Column(name = "aggregate_id", nullable = false)
     private String aggregateId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "event_type", nullable = false)
-    private String eventType;
+    private OutboxEventType eventType;
 
     @Column(name = "payload", nullable = false, columnDefinition = "jsonb")
     private String payload;

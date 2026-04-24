@@ -1,6 +1,6 @@
 package com.ykw.article.repository;
 
-import com.ykw.article.model.ArticleIdempotency;
+import com.ykw.article.model.idempotency.ArticleIdempotency;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,10 +14,13 @@ public interface ArticleIdempotencyRepository extends JpaRepository<ArticleIdemp
 
     @Modifying
     @Query("""
-        DELETE FROM ArticleIdempotency i WHERE
-        (i.creationStatus = 'COMPLETED' AND i.createdAt < :cutoffCompleted)
+    DELETE FROM ArticleIdempotency i
+    WHERE
+        (i.creationStatus = 'COMPLETED'
+            AND i.createdAt < :cutoffCompleted)
         OR
-        (i.creationStatus = 'IN_PROGRESS' AND i.createdAt < :cutoffInProgress)
-    """)
-    int cleanup(Instant cutoffCompleted, Instant cutoffInProgress);
+        (i.creationStatus = 'IN_PROGRESS'
+            AND i.createdAt < :cutoffInProgress)
+""")
+    int deleteOldRecords(Instant cutoffCompleted, Instant cutoffInProgress);
 }
