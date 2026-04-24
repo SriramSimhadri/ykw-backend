@@ -5,6 +5,8 @@ spring:
         connect-timeout: 2000   # fail fast if service is unreachable (2s)
         response-timeout: 5s    # don't wait forever for slow responses
       routes:
+
+        # ---------------- AUTH SERVICE ----------------
         - id: auth-service-api
           uri: ${AUTH_SERVICE_URL}
           predicates:
@@ -35,6 +37,7 @@ spring:
           filters:
             - StripPrefix=2  # remove /internal/auth before forwarding
 
+        # ---------------- PROFILE SERVICE ----------------
         - id: profile-service-api
           uri: ${PROFILE_SERVICE_URL}
           predicates:
@@ -67,20 +70,38 @@ spring:
           filters:
             - StripPrefix=2
 
-        - id: article-service
+        # ---------------- ARTICLE SERVICE ----------------
+        - id: article-service-api
           uri: ${ARTICLE_SERVICE_URL}
           predicates:
             - Path=/api/articles/**
           filters:
+            # Retry comes FIRST
             - name: Retry
               args:
                 retries: 2
-                methods: GET
+                methods: GET,PUT   # only safe (idempotent) methods
                 statuses: BAD_GATEWAY, GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR
+                exceptions:
+                  - java.io.IOException
+                  - java.net.ConnectException
+                backoff:
+                  firstBackoff: 100ms # retry1 - wait 100ms, retry 2 - wait 200ms, retry 3 -> wait 400ms
+                  maxBackoff: 1s
+                  factor: 2
+                  basedOnPreviousValue: true
+            # Circuit breaker to prevent cascading failures if profile-service is slow/down
             - name: CircuitBreaker
               args:
                 name: articleServiceCircuitBreaker
-                fallbackUri: forward:/fallback/articles
+                fallbackUri: forward:/fallback/articles  # fallback handled inside gateway
+
+        - id: article-service-internal
+          uri: ${ARTICLE_SERVICE_URL}
+          predicates:
+            - Path=/internal/users/**
+          filters:
+            - StripPrefix=2
 
         # ---------------- LIKES SERVICE ----------------
         - id: article-likes-service
