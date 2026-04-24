@@ -1,0 +1,6 @@
+logging:
+  level:
+    root: INFO
+    com.ykw: INFO
+    org.springframework: WARN
+    org.springframework.web: WARN

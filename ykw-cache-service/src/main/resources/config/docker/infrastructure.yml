@@ -1,0 +1,4 @@
+REDIS_HOST: redis
+REDIS_PORT: 6379
+
+OTEL_METRICS_URL: http://otel-collector:4318/v1/metrics

@@ -56,6 +56,7 @@ public class ArticleServiceImpl implements ArticleService {
         LogUtil.info(LogEvent.create("ARTICLE_CREATION_INITIATED")
                 .add(ARTICLE_SLUG, slug)
                 .add(ARTICLE_ID, articleId)
+                .add(ARTICLE_STATUS, request.getStatus())
                 .userId(authorId));
 
         ArticleIdempotency articleCreation;
@@ -79,6 +80,7 @@ public class ArticleServiceImpl implements ArticleService {
                 LogUtil.warn(LogEvent.create("ARTICLE_CREATION_IN_PROGRESS")
                         .add(ARTICLE_SLUG, slug)
                         .add(ARTICLE_ID, articleId)
+                        .add(ARTICLE_STATUS, request.getStatus())
                         .userId(authorId));
                 throw new ResourceConflictException("Article creation in progress");
             }
@@ -89,6 +91,7 @@ public class ArticleServiceImpl implements ArticleService {
                 LogUtil.info(LogEvent.create("ARTICLE_ALREADY_CREATED")
                         .add(ARTICLE_SLUG, existing.getSlug())
                         .add(ARTICLE_ID, existing.getId())
+                        .add(ARTICLE_STATUS, request.getStatus())
                         .add(CREATED_AT, existing.getCreatedAt())
                         .userId(authorId));
                 return articleMapper.toResponse(existing);
@@ -108,6 +111,7 @@ public class ArticleServiceImpl implements ArticleService {
         LogUtil.info(LogEvent.create("ARTICLE_CREATION_COMPLETED")
                 .add(ARTICLE_ID, saved.getId())
                 .add(ARTICLE_SLUG, saved.getSlug())
+                .add(ARTICLE_STATUS, request.getStatus())
                 .add(CREATED_AT, saved.getCreatedAt())
                 .userId(authorId));
 
@@ -127,6 +131,7 @@ public class ArticleServiceImpl implements ArticleService {
         LogUtil.info(LogEvent.create("ARTICLE_UPDATE_INITIATED")
                 .add(ARTICLE_SLUG, slug)
                 .add(ARTICLE_ID, request.getArticleId())
+                .add(ARTICLE_STATUS, request.getStatus())
                 .userId(authorId));
 
         ArticleIdempotency articleUpdate;
@@ -149,6 +154,7 @@ public class ArticleServiceImpl implements ArticleService {
                 LogUtil.warn(LogEvent.create("ARTICLE_UPDATE_IN_PROGRESS")
                         .add(ARTICLE_SLUG, slug)
                         .add(ARTICLE_ID, request.getArticleId())
+                        .add(ARTICLE_STATUS, request.getStatus())
                         .userId(authorId));
                 throw new ResourceConflictException("Article update in progress");
             }
@@ -159,6 +165,7 @@ public class ArticleServiceImpl implements ArticleService {
                 LogUtil.info(LogEvent.create("ARTICLE_ALREADY_UPDATED")
                         .add(ARTICLE_SLUG, existing.getId())
                         .add(ARTICLE_ID, existing.getId())
+                        .add(ARTICLE_STATUS, request.getStatus())
                         .add(UPDATED_AT, existing.getUpdatedAt())
                         .userId(authorId));
                 return articleMapper.toResponse(existing);
@@ -192,6 +199,7 @@ public class ArticleServiceImpl implements ArticleService {
         LogUtil.info(LogEvent.create("ARTICLE_UPDATE_COMPLETED")
                 .add(ARTICLE_SLUG, article.getSlug())
                 .add(ARTICLE_ID, article.getId())
+                .add(ARTICLE_STATUS, request.getStatus())
                 .add(UPDATED_AT, article.getUpdatedAt())
                 .userId(article.getAuthorId()));
 
@@ -206,6 +214,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         LogUtil.info(LogEvent.create("ARTICLE_DELETION_INITIATED")
                 .add(ARTICLE_SLUG, slug)
+                .add(ARTICLE_STATUS, ArticleStatus.DELETED)
                 .userId(authorId));
 
         Article article = articleRepository
@@ -224,6 +233,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         LogUtil.info(LogEvent.create("ARTICLE_MARKED_AS_DELETED")
                 .add(ARTICLE_SLUG, slug)
+                .add(ARTICLE_STATUS, ArticleStatus.DELETED)
                 .userId(authorId));
     }
 

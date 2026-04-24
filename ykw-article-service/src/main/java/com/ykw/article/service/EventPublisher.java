@@ -1,5 +1,6 @@
 package com.ykw.article.service;
 
+import com.ykw.article.mapper.EventMapper;
 import com.ykw.article.model.outbox.OutboxEvent;
 import com.ykw.article.model.outbox.OutboxEventStatus;
 import com.ykw.article.repository.OutboxRepository;
@@ -18,26 +19,27 @@ import static com.ykw.common.constants.Constants.*;
 
 @Service
 @RequiredArgsConstructor
-public class OutboxPublisher {
+public class EventPublisher {
 
     private final OutboxRepository repository;
-    private final KafkaTemplate<String, String> kafkaTemplate;
-    private final OutboxPublisher self;
+    private final EventMapper eventMapper;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final EventPublisher self;
 
     @Scheduled(fixedDelay = 10000)
     public void publish() {
 
-        LogUtil.debug(LogEvent.create("PUBLISHING_ARTICLE_OUTBOX_EVENTS")
+        LogUtil.debug(LogEvent.create("PUBLISHING_ARTICLE_EVENTS")
                 .add(EVENT_TOPIC, ARTICLE_EVENTS_TOPIC));
 
         List<OutboxEvent> events = self.fetchAndMarkProcessing(50);
 
         for (OutboxEvent event : events) {
             try {
-                kafkaTemplate.send(ARTICLE_EVENTS_TOPIC, event.getAggregateId(), event.getPayload()).get();
+                kafkaTemplate.send(ARTICLE_EVENTS_TOPIC, event.getAggregateId(), eventMapper.toEvent(event)).get();
                 self.markSent(event);
             } catch (Exception e) {
-                LogUtil.error(LogEvent.create("PUBLISHING_ARTICLE_OUTBOX_EVENT_FAILED")
+                LogUtil.error(LogEvent.create("PUBLISHING_ARTICLE_EVENT_FAILED")
                         .add(ID, event.getId())
                         .add(EVENT_ID, event.getEventId())
                         .add(EVENT_TYPE, event.getEventType())

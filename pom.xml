@@ -27,6 +27,7 @@
         <module>ykw-article-comments-service</module>
         <module>ykw-follows-service</module>
         <module>ykw-api-gateway</module>
+        <module>ykw-cache-service</module>
     </modules>
 
     <properties>

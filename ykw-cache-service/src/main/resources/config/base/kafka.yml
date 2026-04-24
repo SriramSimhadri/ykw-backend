@@ -1,0 +1,29 @@
+spring:
+  kafka:
+    bootstrap-servers: ykw-kafka:9092
+
+    consumer:
+
+      # Consumers in same group share work
+      # 3 consumers -> 3 partitions > parallel processing
+      group-id: ykw-cache-group
+
+      # when new service starts, it starts from beginning if no offset
+      # earliest -> replays all events
+      # latest -> skips old events
+      auto-offset-reset: earliest
+
+      # Process success -> then commit
+      enable-auto-commit: false
+
+      #Poll > get 100 events . process batch
+      max-poll-records: 100
+
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+    # 3 threads consumer threads -> process messages in parallel
+    listener:
+      concurrency: 3

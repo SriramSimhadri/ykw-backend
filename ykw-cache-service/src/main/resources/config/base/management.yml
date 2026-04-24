@@ -1,0 +1,6 @@
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: true
+        url: ${OTEL_METRICS_URL}

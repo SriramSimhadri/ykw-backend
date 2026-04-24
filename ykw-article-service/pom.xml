@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>ykw-article-service</artifactId>
-    <name>Article Service</name>
+    <name>ykw-article-service</name>
     <packaging>jar</packaging>
 
     <dependencies>

@@ -1,0 +1,18 @@
+spring:
+
+  main:
+    web-application-type: none # prevents nettty, tomcat, port usage, etc
+
+  application:
+    name: ykw-cache-service
+
+  profiles:
+    active: dev
+
+  config:
+    import:
+      - classpath:config/base/data.yml
+      - classpath:config/base/kafka.yml
+      - classpath:config/base/logging.yml
+      - classpath:config/base/management.yml
+      - classpath:config/${spring.profiles.active}/infrastructure.yml

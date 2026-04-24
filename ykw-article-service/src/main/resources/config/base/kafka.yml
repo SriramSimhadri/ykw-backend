@@ -1,66 +1,41 @@
-kafka:
-  bootstrap-servers: ykw-kafka:9092
+spring:
+  kafka:
+    bootstrap-servers: ykw-kafka:9092
 
-  producer:
-    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
 
-    # without this data goes in binary blobs
-    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      # without this data goes in binary blobs
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-    # Leader + all replicas must confirm write. It gaurantees the durability
-    acks: all
+      # Leader + all replicas must confirm write. It gaurantees the durability
+      acks: all
 
-    # Retry sending message if it fails : Send fails -> retry -> succeeds later
-    retries: 2147483647
-    properties:
+      # Retry sending message if it fails : Send fails -> retry -> succeeds later
+      retries: 2147483647
+      properties:
 
-      # prevents duplicated messages during retry
-      enable.idempotence: true
+        # prevents duplicated messages during retry
+        enable.idempotence: true
 
-      # Limits how many messages can be “in progress”: example without this configuration
-      # Message 1 fails -> retried later
-      # Message 2 succeeds first
-      # It leads to ORDER BROKEN, with this ordering preserved
-      # 5 is the maximum number of parallel in-flight messages Kafka can handle while still guaranteeing ordering with idempotence
-      max.in.flight.requests.per.connection: 5
+        # Limits how many messages can be “in progress”: example without this configuration
+        # Message 1 fails -> retried later
+        # Message 2 succeeds first
+        # It leads to ORDER BROKEN, with this ordering preserved
+        # 5 is the maximum number of parallel in-flight messages Kafka can handle while still guaranteeing ordering with idempotence
+        max.in.flight.requests.per.connection: 5
 
-      # Kafka slow ->
-      #  retries for 2 mins
-      #     then fail
-      delivery.timeout.ms: 120000
+        # Kafka slow ->
+        #  retries for 2 mins
+        #     then fail
+        delivery.timeout.ms: 120000
 
-      # Waits a bit before sending batch
-      # Collect 10 msgs -> send together, it gives better throughput
-      linger.ms: 5
+        # Waits a bit before sending batch
+        # Collect 10 msgs -> send together, it gives better throughput
+        linger.ms: 5
 
-      # Max batch size in bytes
-      batch.size: 16384
+        # Max batch size in bytes
+        batch.size: 16384
 
-      # Removes Spring-specific metadata
-      spring.json.add.type.headers: false
-
-  consumer:
-
-    # Consumers in same group share work
-    # 3 consumers -> 3 partitions > parallel processing
-    group-id: ykw-group
-
-    # when new service starts, it starts from beginning if no offset
-    # earliest -> replays all events
-    # latest -> skips old events
-    auto-offset-reset: earliest
-
-    # Process success -> then commit
-    enable-auto-commit: false
-
-    #Poll > get 100 events . process batch
-    max-poll-records: 100
-
-    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-    properties:
-      spring.json.trusted.packages: "*"
-
-  # 3 threads consumer threads -> process messages in parallel
-  listener:
-    concurrency: 3
+        # Removes Spring-specific metadata
+        spring.json.add.type.headers: false

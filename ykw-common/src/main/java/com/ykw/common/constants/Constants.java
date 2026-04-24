@@ -24,6 +24,8 @@ public interface Constants {
 
     String ARTICLE_ID = "article_id";
 
+    String ARTICLE_STATUS = "article_status";
+
     String ARTICLE_IDEMPOTENCY_DELETED_COUNT = "idempotent_article_cleanup_count";
 
     String OUTBOX_EVENT_STATUS = "outbox_event_status";
