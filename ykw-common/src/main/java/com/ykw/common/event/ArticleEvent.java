@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,7 +21,7 @@ public class ArticleEvent {
     private String content;
     private String coverImageUrl;
     private String status;
-    private String createdAt;
-    private String updatedAt;
-    private String publishedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private Instant publishedAt;
 }
