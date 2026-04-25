@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ykw.cache.service.model.ReceivedEvent;
 import com.ykw.cache.service.processor.Processor;
+import com.ykw.common.logging.LogEvent;
+import com.ykw.common.logging.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -26,7 +28,8 @@ public class Consumer {
             groupId = "ykw-cache-service"
     )
     public void consume(String message, Acknowledgment ack) throws JsonProcessingException {
-        log.info("Received raw event... {}", message);
+
+        LogUtil.info(LogEvent.create("RECEIVED_KAFKA_EVENT").add("payload", message));
         try {
             ReceivedEvent event = objectMapper.readValue(message, ReceivedEvent.class);
             processor.process(event);
