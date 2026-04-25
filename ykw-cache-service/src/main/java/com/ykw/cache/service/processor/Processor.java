@@ -1,6 +1,6 @@
 package com.ykw.cache.service.processor;
 
-import com.ykw.cache.service.model.ReceivedEvent;
+import com.ykw.common.event.Event;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +12,11 @@ public class Processor {
 
     private final Map<String, CacheHandler> handlers;
 
-    public void process(ReceivedEvent event) {
-
-        CacheHandler handler = handlers.get(event.getEntity());
-
+    public void process(Event<?> event) {
+        CacheHandler handler = handlers.get(event.getEntity().toLowerCase());
         if (handler == null) {
-            throw new RuntimeException("No handler for entity: " + event.getEntity());
+            throw new RuntimeException("No handler for eventType: " + event.getEventType());
         }
-
         handler.handle(event);
     }
 }

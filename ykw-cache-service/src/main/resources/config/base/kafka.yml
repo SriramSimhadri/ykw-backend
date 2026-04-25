@@ -6,7 +6,7 @@ spring:
 
       # Consumers in same group share work
       # 3 consumers -> 3 partitions > parallel processing
-      group-id: ykw-cache-group
+      group-id: ykw-cache-service
 
       # when new service starts, it starts from beginning if no offset
       # earliest -> replays all events
@@ -20,10 +20,13 @@ spring:
       max-poll-records: 100
 
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
       properties:
         spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.ykw.common.event.Event
 
     # 3 threads consumer threads -> process messages in parallel
     listener:
+      ack-mode: manual
       concurrency: 3

@@ -1,9 +1,9 @@
 package com.ykw.cache.service.processor;
 
-import com.ykw.cache.service.model.ReceivedEvent;
+import com.ykw.common.event.Event;
 
 public interface CacheHandler {
 
-    void handle(ReceivedEvent event);
+    void handle(Event<?> event);
 
 }

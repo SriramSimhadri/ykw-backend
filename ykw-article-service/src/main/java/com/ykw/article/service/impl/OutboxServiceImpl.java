@@ -1,5 +1,6 @@
 package com.ykw.article.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ykw.article.model.article.Article;
 import com.ykw.article.model.outbox.OutboxEvent;
@@ -9,7 +10,7 @@ import com.ykw.article.repository.OutboxRepository;
 import com.ykw.article.service.OutboxService;
 import com.ykw.common.logging.LogEvent;
 import com.ykw.common.logging.LogUtil;
-import com.ykw.common.payload.ArticleEvent;
+import com.ykw.common.event.ArticleEvent;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,13 +46,13 @@ public class OutboxServiceImpl implements OutboxService {
                     .userId(article.getAuthorId()));
 
             ArticleEvent payload = buildPayload(article);
-
+            JsonNode payloadNode = objectMapper.valueToTree(payload);
             repository.save(
                     OutboxEvent.builder()
                             .eventId(UUID.randomUUID().toString())
                             .aggregateId(article.getId())
                             .eventType(eventType)
-                            .payload(objectMapper.writeValueAsString(payload))
+                            .payload(payloadNode)
                             .status(status)
                             .retries(0)
                             .createdAt(Instant.now())

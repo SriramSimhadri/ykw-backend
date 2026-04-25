@@ -1,8 +1,6 @@
 package com.ykw.cache.service.consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ykw.cache.service.model.ReceivedEvent;
+import com.ykw.common.event.Event;
 import com.ykw.cache.service.processor.Processor;
 import com.ykw.common.logging.LogEvent;
 import com.ykw.common.logging.LogUtil;
@@ -21,22 +19,18 @@ public class Consumer {
 
     private final Processor processor;
 
-    private final ObjectMapper objectMapper;
+    @KafkaListener(topics = ARTICLE_EVENTS_TOPIC)
+    public void consume(Event<?> event, Acknowledgment ack) {
+        LogUtil.info(LogEvent.create("EVENT_RECEIVED").add("event_id", event.getEventId()));
 
-    @KafkaListener(
-            topics = { ARTICLE_EVENTS_TOPIC },
-            groupId = "ykw-cache-service"
-    )
-    public void consume(String message, Acknowledgment ack) throws JsonProcessingException {
-
-        LogUtil.info(LogEvent.create("RECEIVED_KAFKA_EVENT").add("payload", message));
         try {
-            ReceivedEvent event = objectMapper.readValue(message, ReceivedEvent.class);
             processor.process(event);
             ack.acknowledge();
         } catch (Exception e) {
-            log.error("Failed processing message {}", message, e);
-            throw e;
+            log.error("Failed processing event {}", event, e);
+
+            // TODO: skip bad message (replace later with DLQ)
+            ack.acknowledge();
         }
     }
 }
