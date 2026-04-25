@@ -1,5 +1,6 @@
 package com.ykw.cache.service.processor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ykw.cache.service.service.RedisCacheService;
 import com.ykw.common.event.Event;
 import com.ykw.common.event.ArticleEvent;
@@ -12,10 +13,12 @@ public class ArticleCacheHandler implements CacheHandler {
 
     private final RedisCacheService redisService;
 
+    private final ObjectMapper objectMapper;
+
     @Override
     public void handle(Event<?> event) {
 
-        ArticleEvent article = (ArticleEvent) event.getPayload();
+        ArticleEvent article = objectMapper.convertValue(event.getPayload(), ArticleEvent.class);
 
         String keyId = "article:" + article.getId();
         String keySlug = "article:slug:" + article.getSlug();

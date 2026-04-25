@@ -9,6 +9,8 @@ import com.ykw.common.event.Event;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Instant;
+
 @Mapper(componentModel = "spring")
 public abstract class EventMapper {
 
@@ -27,5 +29,13 @@ public abstract class EventMapper {
 
     protected String map(OutboxEventType eventType) {
         return eventType.name();
+    }
+
+    protected String map(Instant date) {
+        if (date != null) {
+            Instant instant = Instant.ofEpochMilli(date.toEpochMilli());
+            return instant.toString();
+        }
+        return null;
     }
 }
