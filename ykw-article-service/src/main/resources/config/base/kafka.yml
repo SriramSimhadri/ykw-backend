@@ -38,4 +38,4 @@ spring:
         batch.size: 16384
 
         # Removes Spring-specific metadata
-        spring.json.add.type.headers: false
+        spring.json.add.type.headers: true
