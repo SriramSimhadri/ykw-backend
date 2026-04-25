@@ -1,7 +1,10 @@
 package com.ykw.article.model.outbox;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 
@@ -28,6 +31,7 @@ public class OutboxEvent {
     @Column(name = "event_type", nullable = false)
     private OutboxEventType eventType;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "payload", nullable = false, columnDefinition = "jsonb")
     private String payload;
 
