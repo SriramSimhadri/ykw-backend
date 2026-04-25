@@ -48,7 +48,7 @@ CREATE TABLE outbox_event (
     aggregate_id VARCHAR(50) NOT NULL,
     event_type VARCHAR(50) NOT NULL CHECK (event_type IN ('ARTICLE_CREATED', 'ARTICLE_UPDATED', 'ARTICLE_DELETED')),
     payload JSONB NOT NULL,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('NEW', 'SENT', 'FAILED')),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('NEW', 'PROCESSING', 'SENT', 'FAILED')),
     retries INT DEFAULT 0,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
