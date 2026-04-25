@@ -7,5 +7,7 @@ AUTH_SERVICE_URL: http://ykw-auth-service:8090
 REDIS_HOST: redis
 REDIS_PORT: 6379
 
+KAFKA_BROKER: ${KAFKA_BROKER}
+
 
 OTEL_METRICS_URL: http://otel-collector:4318/v1/metrics

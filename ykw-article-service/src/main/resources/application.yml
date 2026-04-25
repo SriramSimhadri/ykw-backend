@@ -11,6 +11,8 @@ spring:
       - classpath:config/base/security.yml
       - classpath:config/base/logging.yml
       - classpath:config/base/management.yml
+      - classpath:config/base/kafka.yml
+      - classpath:config/base/resilience.yml
       - classpath:config/${spring.profiles.active}/infrastructure.yml
 
 server:
