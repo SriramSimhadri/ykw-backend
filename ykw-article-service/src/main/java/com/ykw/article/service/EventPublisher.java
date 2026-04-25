@@ -24,7 +24,7 @@ public class EventPublisher {
     @Scheduled(fixedDelay = 10000)
     public void publish() {
 
-        LogUtil.debug(LogEvent.create("PUBLISHING_ARTICLE_EVENTS")
+        LogUtil.info(LogEvent.create("PUBLISHING_ARTICLE_EVENTS")
                 .add(EVENT_TOPIC, ARTICLE_EVENTS_TOPIC));
 
         List<OutboxEvent> events = outboxService.fetchAndMarkProcessing(50);
@@ -33,6 +33,13 @@ public class EventPublisher {
             try {
                 kafkaTemplate.send(ARTICLE_EVENTS_TOPIC, event.getAggregateId(), eventMapper.toEvent(event)).get();
                 outboxService.markSent(event);
+
+                LogUtil.info(LogEvent.create("PUBLISHING_ARTICLE_EVENT_COMPLETED")
+                        .add(ID, event.getId())
+                        .add(EVENT_ID, event.getEventId())
+                        .add(EVENT_TYPE, event.getEventType())
+                        .add(EVENT_TOPIC, ARTICLE_EVENTS_TOPIC));
+
             } catch (Exception e) {
                 LogUtil.error(LogEvent.create("PUBLISHING_ARTICLE_EVENT_FAILED")
                         .add(ID, event.getId())
