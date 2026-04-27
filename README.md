@@ -30,9 +30,8 @@
 
 In short: YKW lets users create, share, discover, and engage with content, while maintaining a social ecosystem with followers, likes, and comments — all built in a modular, scalable, and maintainable backend.
 
-# YKW Architecture (Design IN PROGRESS) looks like below
+# YKW Architecture (Design IN PROGRESS)
 
-################################ In Progress ############################
 
 <img width="1991" height="882" alt="image" src="https://github.com/user-attachments/assets/0777ba0b-fbc1-4d77-8cc6-e42d151bd7b2" />
 
