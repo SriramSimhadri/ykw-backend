@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -90,8 +91,8 @@ public class OutboxServiceImpl implements OutboxService {
                 .content(article.getContent())
                 .coverImageUrl(article.getCoverImageUrl())
                 .subtitle(article.getSubtitle())
-                .publishedAt(article.getPublishedAt())
-                .createdAt(article.getCreatedAt())
+                .publishedAt(formatInstant(article.getPublishedAt()))
+                .createdAt(formatInstant(article.getCreatedAt()))
                 .slug(article.getSlug())
                 .authorId(article.getAuthorId())
                 .title(article.getTitle())
@@ -118,5 +119,9 @@ public class OutboxServiceImpl implements OutboxService {
     @Transactional
     public void markFailed(OutboxEvent event) {
         repository.updateStatus(event.getId(), OutboxEventStatus.FAILED, Instant.now(), event.getRetries() + 1);
+    }
+
+    private String formatInstant(Instant instant) {
+        return instant != null ? DateTimeFormatter.ISO_INSTANT.format(instant) : null;
     }
 }

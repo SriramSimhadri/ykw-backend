@@ -21,7 +21,7 @@ public class ArticleEvent {
     private String content;
     private String coverImageUrl;
     private String status;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private Instant publishedAt;
+    private String  createdAt;
+    private String updatedAt;
+    private String publishedAt;
 }
