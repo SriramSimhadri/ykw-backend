@@ -35,6 +35,9 @@ In short: YKW lets users create, share, discover, and engage with content, while
 
 ################################ In Progress ############################
 
+<img width="1991" height="882" alt="image" src="https://github.com/user-attachments/assets/b50cbaaa-120b-4a2c-8ee8-3cb03b7d56fa" />
+
+
                                                                    
 
 
