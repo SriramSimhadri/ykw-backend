@@ -34,10 +34,7 @@ In short: YKW lets users create, share, discover, and engage with content, while
 
 ################################ In Progress ############################
 
-<img width="1991" height="882" alt="image" src="https://github.com/user-attachments/assets/b50cbaaa-120b-4a2c-8ee8-3cb03b7d56fa" />
-
-
-                                                                   
+<img width="1991" height="882" alt="image" src="https://github.com/user-attachments/assets/0777ba0b-fbc1-4d77-8cc6-e42d151bd7b2" />
 
 
 # auth-service requirements:
