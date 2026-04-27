@@ -9,25 +9,24 @@
       - Manage user profiles.
       - Maintain follower/following counts.
     - Articles (ykw-article-service)
-       - Users can create, edit, publish, or delete articles (drafts or published).
-       - Supports article tags, slugs, cover images, reading time, and article stats.
-       - Personalized feeds for users based on authors they follow.
+       - Users can create, edit, publish, or delete articles (drafts or published), get article.
     - Article Likes (ykw-article-likes-service)
        - Users can like/unlike articles.
-       - Track total likes per article and which users liked it.
     - Article Comments (ykw-article-comments-service)
        - Users can comment on articles, update/delete their comments, and like/unlike comments.
-       - Maintains likes count per comment and provides paginated lists.
     - Follows (ykw-follow-service)
        - Users can follow/unfollow other users.
-       - Provides paginated lists of followers and following users.
 
 - Architecture & Design
-  - Microservices-based: ykw-auth-service, ykw-profile-serivce, ykw-articles-service, ykw-article-likes, ykw-article-comments, and ykw-follows-service services operate independently, each with its own database.
-  - Contract-first: Services communicate via REST APIs following contract
+  - API-Gateway: Validates the requests with auth-service and routes the requests to each services based on the routes configrued
+  - ykw-auth-service, ykw-profile-serivce, ykw-articles-service, ykw-article-likes, ykw-article-comments, and ykw-follows-service services operate independently, each with its own database.
+  - Each service is interacted with events producing and consuming through Kafka topics
   - Eventual consistency: Counts like likes_count, comments_count, and followers_count can be updated asynchronously for scalability.
+  - Ykw-cache-service is used to store the data in redis cache to serve data with less latency
+  - Each service is monitored via grafana with the help of otel-collector, loki (logs), prometheus (metrics) and tempo (traces)
+  - Build application using contract-first design
   - Scalable & Production-ready: Each service has indexes and constraints for performance and data integrity.
-  - Security: Authentication and authorization are handled via JWT tokens, ensuring secure access to protected endpoints.
+  Security: Authentication and authorization are handled via JWT tokens, ensuring secure access to protected endpoints.
 
 In short: YKW lets users create, share, discover, and engage with content, while maintaining a social ecosystem with followers, likes, and comments — all built in a modular, scalable, and maintainable backend.
 
@@ -59,10 +58,8 @@ In short: YKW lets users create, share, discover, and engage with content, while
 - The profile-service is primarily responsible for user management. 
   - Profile management
   - Retrieving user details and lists
-  - Updating user statistics (followers/following count)
- It should NOT handle articles/posts - those go to the article-service. Instead, profile-service can provide user profile info for other services via APIs.
  
-## user-service API endpoints:
+## profile-service API endpoints:
 
 | HTTP(S) Method | Endpoint                  | Description                              | Notes                                                                      |
 |----------------|---------------------------|------------------------------------------|----------------------------------------------------------------------------|
@@ -72,10 +69,8 @@ In short: YKW lets users create, share, discover, and engage with content, while
 
 # article-service requirements:
 - Create, update, delete articles (draft/published)
-- Get article(s) by slug, author, or tags
-- Manage tags associated with articles
+- Get article(s) by slug
 - Maintain stats: likes_count, comments_count, reading_time
-- Pagination for feeds
 - Search and filter articles
 
 ## article-service API endpoints:
@@ -86,14 +81,7 @@ In short: YKW lets users create, share, discover, and engage with content, while
 | GET            | /articles/{slug}                 | Get article by slug                                    | Returns article details with author info                                        |
 | PUT            | /articles/{slug}                 | Update article                                         | Authenticated author only; update content, title, subtitle, cover image, status |
 | DELETE         | /articles/{slug}                 | Delete article                                         | Authenticated author only; cascade deletes article_tags                         |
-| GET            | /articles                        | List all published articles                            | Pagination; optional filters: author_id, tag, search query                      |
-| GET            | /articles/feed                   | Personalized feed for authenticated user               | Returns articles from followed authors; paginated                               |
-| POST           | /articles/{slug}/like            | Like an article                                        | Increment likes_count atomically; auth required                                 |
-| POST           | /articles/{slug}/unlike          | Unlike an article                                      | Decrement likes_count atomically; auth required                                 |
-| GET            | /articles/{slug}/tags            | Get tags for a specific article                        | Returns array of tag names                                                      |
-| POST           | /articles/{slug}/tags            | Add tag(s) to article                                  | Authenticated author only; create tags if not exist                             |
-| DELETE         | /articles/{slug}/tags/{tagName}  | Remove tag from article                                | Authenticated author only                                                       |
-| GET            | /tags                            | List all tags                                          | For auto-complete or trending tags                                              |
+| GET            | /articles                        | List all published articles                            | Pagination; optional filters: author_id, tag, search query                                                
 | GET            | /articles/search                 | Search articles by title, content, or tags             | Support `?q=keyword&tag=xyz&page=1&size=20`                                     |
 
 ## article-likes-service requirements:
@@ -121,9 +109,6 @@ In short: YKW lets users create, share, discover, and engage with content, while
   - Create, update, delete comments for articles.
   - Fetch comments for a given article (with pagination).
   - Fetch comments made by a user.
-  - Like/unlike a comment.
-  - Maintain likes_count for each comment.
-- Integration with article-service (update comments_count) and user-service (user info for each comment).
 
 ## article-comments-service API endpoints
 
@@ -134,9 +119,6 @@ In short: YKW lets users create, share, discover, and engage with content, while
 | DELETE      | /comments/{id}                      | Delete a comment                                     | Authenticated user only                                            |
 | GET         | /comments/article/{articleId}       | Get all comments for an article                      | Paginated; sorted by `created_at`                                  |
 | GET         | /comments/user/{userId}             | Get all comments made by a user                      | Paginated; use `idx_article_comments_user` for fast lookup         |
-| POST        | /comments/{id}/like                 | Like a comment                                       | Increment `likes_count`; auth required                             |
-| POST        | /comments/{id}/unlike               | Unlike a comment                                     | Decrement `likes_count`; auth required                             |
-| GET         | /comments/{id}/likes                | Get total likes for a comment                        | Returns count and optionally list of users who liked               |
 
 
 ## follows-service requirements:
