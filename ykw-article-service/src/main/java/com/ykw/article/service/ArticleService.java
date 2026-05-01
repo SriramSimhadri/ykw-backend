@@ -11,4 +11,6 @@ public interface ArticleService {
     void deleteArticle(String slug);
 
     ArticleResponse updateArticle(String header, String slug, UpdateArticleRequest updateArticleRequest);
+
+    ArticleResponse getArticleBySlug(String slug);
 }

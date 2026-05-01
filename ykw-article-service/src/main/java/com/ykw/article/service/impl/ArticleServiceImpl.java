@@ -237,6 +237,33 @@ public class ArticleServiceImpl implements ArticleService {
                 .userId(authorId));
     }
 
+
+    @Transactional
+    @Override
+    public ArticleResponse getArticleBySlug(String slug) {
+
+        Long authorId = getCurrentUserId();
+
+        LogUtil.info(LogEvent.create("ARTICLE_GET_INITIATED")
+                .add(ARTICLE_SLUG, slug)
+                .userId(authorId));
+
+
+
+
+
+
+
+        LogUtil.info(LogEvent.create("ARTICLE_GET_COMPLETED")
+                .add(ARTICLE_SLUG, slug)
+                .userId(authorId));
+
+        return null;
+
+    }
+
+
+
     private Long getCurrentUserId() {
         return Optional.ofNullable(currentUserContext.getCurrentUser().userId())
                 .orElseThrow(() -> new UnauthorizedException("Unauthorized user"));
