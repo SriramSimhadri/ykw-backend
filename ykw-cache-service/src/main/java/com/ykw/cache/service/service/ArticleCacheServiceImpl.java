@@ -52,7 +52,6 @@ public class ArticleCacheServiceImpl extends ArticleCacheServiceGrpc.ArticleCach
         // Step 3: Convert to protobuf
         Article article = mapToProto(articleObj);
 
-
         LogUtil.info(LogEvent.create("GET_ARTICLE_BY_SLUG_FROM_CACHE_FOUND")
                 .add(ARTICLE_SLUG, request.getSlug()));
 
@@ -76,20 +75,26 @@ public class ArticleCacheServiceImpl extends ArticleCacheServiceGrpc.ArticleCach
         observer.onCompleted();
     }
 
-    private Article mapToProto(Object obj) {
-        ArticleEvent event = (ArticleEvent) obj;
-
-        return Article.newBuilder()
+    private Article mapToProto(ArticleEvent event) {
+        Article.Builder builder = Article.newBuilder()
                 .setId(event.getId())
                 .setSlug(event.getSlug())
                 .setTitle(event.getTitle())
                 .setSubtitle(event.getSubtitle())
                 .setContent(event.getContent())
                 .setStatus(event.getStatus())
-                .setCoverImageUrl(event.getCoverImageUrl())
-                .setPublishedAt(event.getPublishedAt())
-                .setCreatedAt(event.getCreatedAt())
-                .setUpdatedAt(event.getUpdatedAt())
-                .build();
+                .setCoverImageUrl(event.getCoverImageUrl() != null ? event.getCoverImageUrl() : "");
+
+        if (event.getPublishedAt() != null) {
+            builder.setPublishedAt(event.getPublishedAt());
+        }
+        if (event.getCreatedAt() != null) {
+            builder.setCreatedAt(event.getCreatedAt());
+        }
+        if (event.getUpdatedAt() != null) {
+            builder.setUpdatedAt(event.getUpdatedAt());
+        }
+
+        return builder.build();
     }
 }
