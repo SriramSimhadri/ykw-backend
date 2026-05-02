@@ -28,7 +28,7 @@ public class ArticleCacheHandler implements CacheHandler {
             redisService.delete(keySlug);
         } else {
             redisService.put(keyId, article);
-            redisService.put(keySlug, keyId);
+            redisService.putString(keySlug, article.getId());
         }
     }
 }

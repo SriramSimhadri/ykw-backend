@@ -2,6 +2,7 @@ package com.ykw.cache.service.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -10,8 +11,14 @@ public class RedisCacheService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
+    private final StringRedisTemplate stringRedisTemplate;
+
     public void put(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
+    }
+
+    public void putString(String key, String value) {
+        stringRedisTemplate.opsForValue().set(key, value);
     }
 
     public void delete(String key) {
