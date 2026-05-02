@@ -63,7 +63,8 @@ public class ArticleController implements ArticlesApi {
 
     }
 
-    public ResponseEntity<ArticleResponse> getArticleBySlug(String slug) {
+    @Override
+    public ResponseEntity<ArticleResponse> getArticleBySlug(@PathVariable("slug") String slug) {
 
         LogUtil.info(LogEvent.create("ARTICLE_GET_REQUEST_RECEIVED")
                 .add(ARTICLE_SLUG, slug));

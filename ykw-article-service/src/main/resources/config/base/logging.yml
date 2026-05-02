@@ -4,4 +4,4 @@ logging:
     com.ykw: INFO
     org.springframework.security: WARN
     org.springframework: WARN
-    org.springframework.web: WARN
+    org.springframework.web: DEBUG
