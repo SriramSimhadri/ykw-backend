@@ -29,7 +29,7 @@ public class ArticleCacheServiceImpl extends ArticleCacheServiceGrpc.ArticleCach
         String slugKey = "article:slug:" + request.getSlug();
 
         // Get articleId from slug
-        String articleId = redisCacheService.get(slugKey, String.class);
+        String articleId = redisCacheService.getString(slugKey);
 
         if (articleId == null) {
             LogUtil.info(LogEvent.create("GET_ARTICLE_BY_SLUG_FROM_CACHE_NOT_FOUND")
@@ -40,7 +40,7 @@ public class ArticleCacheServiceImpl extends ArticleCacheServiceGrpc.ArticleCach
 
         // Get article using article id
         String articleKey = "article:" + articleId;
-        ArticleEvent articleObj = redisCacheService.get(articleKey, ArticleEvent.class);
+        ArticleEvent articleObj = redisCacheService.getObject(articleKey, ArticleEvent.class);
 
         if (articleObj == null) {
             LogUtil.info(LogEvent.create("GET_ARTICLE_BY_SLUG_FROM_CACHE_NOT_FOUND")
