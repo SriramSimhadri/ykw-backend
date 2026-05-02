@@ -14,6 +14,7 @@
         <dependency>
             <groupId>com.ykw</groupId>
             <artifactId>ykw-proto</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
