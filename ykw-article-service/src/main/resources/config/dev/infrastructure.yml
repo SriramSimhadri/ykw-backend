@@ -10,3 +10,5 @@ KAFKA_BROKER: localhost:9092
 AUTH_SERVICE_URL: http://localhost:8090
 
 OTEL_METRICS_URL: http://otel-collector:4318/v1/metrics
+
+GRPC_SERVER_URL: localhost:9090

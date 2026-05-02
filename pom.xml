@@ -18,6 +18,7 @@
     <name>platform</name>
 
     <modules>
+        <module>ykw-proto</module>
         <module>ykw-common</module>
         <module>ykw-api-contracts</module>
         <module>ykw-auth-service</module>
@@ -84,6 +85,12 @@
             <dependency>
                 <groupId>com.ykw</groupId>
                 <artifactId>ykw-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.ykw</groupId>
+                <artifactId>ykw-proto</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

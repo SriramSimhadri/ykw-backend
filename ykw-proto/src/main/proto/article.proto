@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.ykw.proto";
+option java_outer_classname = "ArticleCacheProto";
+
+service ArticleCacheService {
+
+  rpc GetArticleBySlug (GetArticleRequest) returns (GetArticleResponse);
+
+}
+
+message GetArticleRequest {
+  string slug = 1;
+}
+
+message GetArticleResponse {
+  Article article = 1;
+}
+
+message Article {
+  string id = 1;
+  string slug = 2;
+  string title = 3;
+  string subtitle = 4;
+  string content = 5;
+  string status = 6;
+  string coverImageUrl = 7;
+  int32 readingTime = 8;
+  repeated string tags = 9;
+  string publishedAt = 10;
+  string createdAt = 11;
+  string updatedAt = 12;
+
+  Author author = 13;
+}
+
+message Author {
+  int64 id = 1;
+  string name = 2;
+  string profileImageUrl = 3;
+}

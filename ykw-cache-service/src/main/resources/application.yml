@@ -12,6 +12,7 @@ spring:
   config:
     import:
       - classpath:config/base/data.yml
+      - classpath:config/base/grpc.yml
       - classpath:config/base/kafka.yml
       - classpath:config/base/logging.yml
       - classpath:config/base/management.yml

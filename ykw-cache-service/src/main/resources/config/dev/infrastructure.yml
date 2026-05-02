@@ -2,3 +2,5 @@ REDIS_HOST: localhost
 REDIS_PORT: 6379
 
 OTEL_METRICS_URL: http://otel-collector:4318/v1/metrics
+
+GRPC_SERVER_PORT: 9090
