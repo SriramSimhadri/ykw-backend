@@ -21,8 +21,12 @@ import com.ykw.article.util.ArticleUtil;
 import com.ykw.common.logging.LogEvent;
 import com.ykw.common.logging.LogUtil;
 import com.ykw.common.security.CurrentUserContext;
+import com.ykw.proto.ArticleCacheServiceGrpc;
+import com.ykw.proto.GetArticleRequest;
+import com.ykw.proto.GetArticleResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -42,6 +46,9 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleMapper articleMapper;
     private final ArticleIdempotencyRepository idempotencyRepository;
     private final OutboxService outboxService;
+
+    @GrpcClient("article-cache-service")
+    private ArticleCacheServiceGrpc.ArticleCacheServiceBlockingStub cacheStub;
 
     @Override
     @Transactional
@@ -238,8 +245,8 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
 
-    @Transactional
     @Override
+    @Transactional
     public ArticleResponse getArticleBySlug(String slug) {
 
         Long authorId = getCurrentUserId();
@@ -248,21 +255,52 @@ public class ArticleServiceImpl implements ArticleService {
                 .add(ARTICLE_SLUG, slug)
                 .userId(authorId));
 
+        GetArticleRequest request = GetArticleRequest.newBuilder()
+                .setSlug(slug)
+                .build();
 
+        GetArticleResponse cacheResponse;
 
+        try {
+            cacheResponse = cacheStub.getArticleBySlug(request);
+        } catch (Exception ex) {
+            // cache failure should NOT break API
+            LogUtil.warn(LogEvent.create("CACHE_SERVICE_FAILED")
+                    .add(ARTICLE_SLUG, slug)
+                    .userId(authorId));
+            cacheResponse = null;
+        }
 
+        if (cacheResponse != null && cacheResponse.getFound()) {
+            LogUtil.info(LogEvent.create("ARTICLE_CACHE_HIT")
+                    .add(ARTICLE_SLUG, slug)
+                    .userId(authorId));
 
+            return articleMapper.toResponse(cacheResponse.getArticle());
+        }
 
+        Article article = articleRepository
+                .findBySlugAndStatusNot(slug, ArticleStatus.DELETED)
+                .orElseThrow(() -> {
+                    LogUtil.error(LogEvent.create("ARTICLE_NOT_FOUND")
+                            .add(ARTICLE_SLUG, slug)
+                            .userId(authorId));
+                    return new ResourceNotFoundException("Article not found");
+                });
 
-        LogUtil.info(LogEvent.create("ARTICLE_GET_COMPLETED")
+        LogUtil.info(LogEvent.create("ARTICLE_CACHE_MISS_DB_FETCH")
                 .add(ARTICLE_SLUG, slug)
+                .add(ARTICLE_ID, article.getId())
                 .userId(authorId));
 
-        return null;
+        // Kafka + outbox already handles cache sync
+        LogUtil.info(LogEvent.create("ARTICLE_GET_COMPLETED")
+                .add(ARTICLE_SLUG, slug)
+                .add(ARTICLE_ID, article.getId())
+                .userId(authorId));
 
+        return articleMapper.toResponse(article);
     }
-
-
 
     private Long getCurrentUserId() {
         return Optional.ofNullable(currentUserContext.getCurrentUser().userId())

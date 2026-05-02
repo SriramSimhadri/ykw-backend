@@ -17,4 +17,9 @@ public class RedisCacheService {
     public void delete(String key) {
         redisTemplate.delete(key);
     }
+
+    public <T> T get(String key, Class<T> clazz) {
+        Object value = redisTemplate.opsForValue().get(key);
+        return clazz.cast(value);
+    }
 }

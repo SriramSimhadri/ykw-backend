@@ -13,6 +13,8 @@ public interface ArticleMapper {
 
     ArticleResponse toResponse(Article article);
 
+    ArticleResponse toResponse(com.ykw.proto.Article article);
+
     default OffsetDateTime map(Instant instant) {
         if (instant == null) {
             return null;

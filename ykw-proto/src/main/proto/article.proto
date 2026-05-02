@@ -15,7 +15,8 @@ message GetArticleRequest {
 }
 
 message GetArticleResponse {
-  Article article = 1;
+  bool found = 1;
+  Article article = 2;
 }
 
 message Article {
@@ -26,13 +27,10 @@ message Article {
   string content = 5;
   string status = 6;
   string coverImageUrl = 7;
-  int32 readingTime = 8;
-  repeated string tags = 9;
-  string publishedAt = 10;
-  string createdAt = 11;
-  string updatedAt = 12;
-
-  Author author = 13;
+  string publishedAt = 8;
+  string createdAt = 9;
+  string updatedAt = 10;
+  Author author = 11;
 }
 
 message Author {

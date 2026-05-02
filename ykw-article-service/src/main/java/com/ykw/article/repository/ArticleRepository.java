@@ -10,9 +10,10 @@ import java.util.Optional;
 
 public interface ArticleRepository extends JpaRepository<Article, String> {
 
-    Optional<Article> findByAuthorIdAndSlugAndStatusNot(
-            Long authorId,
-            String slug,
-            ArticleStatus status
-    );
+    Optional<Article> findByAuthorIdAndSlugAndStatusNot(Long authorId,
+                                                        String slug,
+                                                        ArticleStatus status);
+
+    Optional<Article> findBySlugAndStatusNot(String slug,
+                                             ArticleStatus articleStatus);
 }
