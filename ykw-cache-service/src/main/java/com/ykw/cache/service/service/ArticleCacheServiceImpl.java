@@ -32,7 +32,7 @@ public class ArticleCacheServiceImpl extends ArticleCacheServiceGrpc.ArticleCach
         String articleId = redisCacheService.get(slugKey, String.class);
 
         if (articleId == null) {
-            LogUtil.warn(LogEvent.create("GET_ARTICLE_BY_SLUG_FROM_CACHE_NOT_FOUND")
+            LogUtil.info(LogEvent.create("GET_ARTICLE_BY_SLUG_FROM_CACHE_NOT_FOUND")
                     .add(ARTICLE_SLUG, request.getSlug()));
             respondNotFound(responseObserver);
             return;
@@ -43,7 +43,7 @@ public class ArticleCacheServiceImpl extends ArticleCacheServiceGrpc.ArticleCach
         ArticleEvent articleObj = redisCacheService.get(articleKey, ArticleEvent.class);
 
         if (articleObj == null) {
-            LogUtil.warn(LogEvent.create("GET_ARTICLE_BY_SLUG_FROM_CACHE_NOT_FOUND")
+            LogUtil.info(LogEvent.create("GET_ARTICLE_BY_SLUG_FROM_CACHE_NOT_FOUND")
                     .add(ARTICLE_SLUG, request.getSlug()));
             respondNotFound(responseObserver);
             return;
@@ -52,16 +52,21 @@ public class ArticleCacheServiceImpl extends ArticleCacheServiceGrpc.ArticleCach
         // Step 3: Convert to protobuf
         Article article = mapToProto(articleObj);
 
+
+        LogUtil.info(LogEvent.create("GET_ARTICLE_BY_SLUG_FROM_CACHE_FOUND")
+                .add(ARTICLE_SLUG, request.getSlug()));
+
         GetArticleResponse response = GetArticleResponse.newBuilder()
                 .setFound(true)
                 .setArticle(article)
                 .build();
 
+        LogUtil.info(LogEvent.create("GET_ARTICLE_BY_SLUG_FROM_CACHE_SUCCESS")
+                .add(ARTICLE_SLUG, request.getSlug()));
+
         responseObserver.onNext(response);
         responseObserver.onCompleted();
 
-        LogUtil.info(LogEvent.create("GET_ARTICLE_BY_SLUG_FROM_CACHE_SUCCESS")
-                .add(ARTICLE_SLUG, request.getSlug()));
     }
 
     private void respondNotFound(StreamObserver<GetArticleResponse> observer) {
