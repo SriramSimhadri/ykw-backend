@@ -30,7 +30,7 @@
 
 In short: YKW lets users create, share, discover, and engage with content, while maintaining a social ecosystem with followers, likes, and comments — all built in a modular, scalable, and maintainable backend.
 
-# YKW Architecture (Design IN PROGRESS)
+### YKW highlevel Architecture
 
 
 <img width="1991" height="882" alt="image" src="https://github.com/user-attachments/assets/0777ba0b-fbc1-4d77-8cc6-e42d151bd7b2" />
@@ -135,3 +135,6 @@ In short: YKW lets users create, share, discover, and engage with content, while
 | GET            | /follows/{userId}/followers          | Get all followers of a user                           | Paginated; use `idx_follows_following` for fast lookup             |
 | GET            | /follows/{userId}/following          | Get all users that the user is following              | Paginated                                                          |
 | GET            | /follows/{followerId}/{followingId}  | Check if a user follows another user                  | Returns true/false                                                 |
+
+
+Work in progress...
